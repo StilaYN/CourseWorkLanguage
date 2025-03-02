@@ -5,6 +5,10 @@ import java.util.function.UnaryOperator;
 
 public interface Command {
 
+    int getId();
+
+    void setId(int id);
+
     void execute();
 
     void repeat();

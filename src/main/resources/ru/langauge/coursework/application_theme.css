@@ -9,12 +9,18 @@
     -fx-max-width: infinity;
 }
 
+.minSlider{
+    -fx-min-width: 50px;
+    -fx-max-width: 50px;
+}
+
 .notScrollArea {
     -fx-hbar-policy: never;
     -fx-vbar-policy: never;
     -fx-font-size: 12;
     -fx-font-weight: bold;
 }
+
 
 .text-area .scroll-pane {
     -fx-hbar-policy: never;

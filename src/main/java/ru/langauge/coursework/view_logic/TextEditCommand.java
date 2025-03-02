@@ -8,6 +8,7 @@ public class TextEditCommand implements Command {
     private String newText;
     private final TextArea contrrolTextArea;
     private int position;
+    private int id;
 
     @Override
     public void execute() {
@@ -51,5 +52,15 @@ public class TextEditCommand implements Command {
     @Override
     public Command copy() {
         return new TextEditCommand(oldText, newText, contrrolTextArea);
+    }
+
+    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }

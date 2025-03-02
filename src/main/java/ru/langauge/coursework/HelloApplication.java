@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import ru.langauge.coursework.Controller.MainWindowController;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -19,6 +20,9 @@ public class HelloApplication extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("main_window_view.fxml"), bundle);
         Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+
+        MainWindowController controller = fxmlLoader.getController();
+        controller.setStage(stage);
 
         stage.setTitle("CodeAnalyzer");
         stage.setScene(scene);

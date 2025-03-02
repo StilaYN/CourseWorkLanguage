@@ -7,23 +7,34 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import ru.langauge.coursework.core.FileService;
 import ru.langauge.coursework.view_logic.CommandManager;
 import ru.langauge.coursework.view_logic.ErrorModel;
 import ru.langauge.coursework.view_logic.TextEditCommand;
 
 import javax.lang.model.SourceVersion;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -60,11 +71,17 @@ public class MainWindowController implements Initializable {
 
     private ResourceBundle resourceBundle;
 
+    private Stage stage;
+
     private final CommandManager commandManager = new CommandManager(30);
+
+    private FileService fileService;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        fileService = new FileService(commandManager);
 
         resourceBundle = resources;
 
@@ -80,6 +97,7 @@ public class MainWindowController implements Initializable {
             }
             updateLineNumbers(newValue);
             updateHighlight(newValue);
+
         });
 
         textArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
@@ -90,36 +108,21 @@ public class MainWindowController implements Initializable {
             }
         });
 
+        setupDragAndDrop();
         updateLineNumbers(textArea.getText());
         updateHighlight(textArea.getText());
     }
 
 
     private void initializeButtonAction() {
-        undoButton.setOnAction(
-                e -> {
-                    commandManager.cancelCommand();
-                }
-        );
-        redoButton.setOnAction(
-                e -> {
-                    commandManager.repeatCommand();
-                }
-        );
-        copyButton.setOnAction(
-                e -> {
-                    textArea.copy();
-                }
-        );
-        cutButton.setOnAction(
-                e -> {
-                    textArea.cut();
-                }
-        );
-        pasteButton.setOnAction(
-                e -> {
-                    textArea.paste();
-                }
+        newButton.setOnAction(e -> createNewFile());
+        openButton.setOnAction(e -> openFile());
+        saveButton.setOnAction(e -> saveFile());
+        undoButton.setOnAction(e -> commandManager.cancelCommand());
+        redoButton.setOnAction(e -> commandManager.repeatCommand());
+        copyButton.setOnAction(e -> textArea.copy());
+        cutButton.setOnAction(e -> textArea.cut());
+        pasteButton.setOnAction(e -> textArea.paste()
         );
     }
 
@@ -128,12 +131,16 @@ public class MainWindowController implements Initializable {
         Menu fileMenu = new Menu();
         fileMenu.textProperty().bind(StringPropertyWithLocale.FILE.getProperty());
         MenuItem createMenuItem = new MenuItem();
+        createMenuItem.setOnAction(e -> createNewFile());
         createMenuItem.textProperty().bind(StringPropertyWithLocale.CREATE.getProperty());
         MenuItem openMenuItem = new MenuItem();
+        openMenuItem.setOnAction(e -> openFile());
         openMenuItem.textProperty().bind(StringPropertyWithLocale.OPEN.getProperty());
         MenuItem saveMenuItem = new MenuItem();
+        saveMenuItem.setOnAction(e -> fileService.save(textArea.getText()));
         saveMenuItem.textProperty().bind(StringPropertyWithLocale.SAVE.getProperty());
         MenuItem saveAsMenuItem = new MenuItem();
+        saveAsMenuItem.setOnAction(e -> saveFile());
         saveAsMenuItem.textProperty().bind(StringPropertyWithLocale.SAVE_AS.getProperty());
         MenuItem exitMenuItem = new MenuItem();
         exitMenuItem.textProperty().bind(StringPropertyWithLocale.EXIT.getProperty());
@@ -142,39 +149,19 @@ public class MainWindowController implements Initializable {
         Menu editMenu = new Menu();
         editMenu.textProperty().bind(StringPropertyWithLocale.EDIT.getProperty());
         MenuItem undoMenuItem = new MenuItem();
-        editMenu.setOnAction(
-                e -> {
-                    commandManager.cancelCommand();
-                }
-        );
+        editMenu.setOnAction(e -> commandManager.cancelCommand());
         undoMenuItem.textProperty().bind(StringPropertyWithLocale.UNDO.getProperty());
         MenuItem repeatMenuItem = new MenuItem();
-        repeatMenuItem.setOnAction(
-                e -> {
-                    commandManager.repeatCommand();
-                }
-        );
+        repeatMenuItem.setOnAction(e -> commandManager.repeatCommand());
         repeatMenuItem.textProperty().bind(StringPropertyWithLocale.REPEAT.getProperty());
         MenuItem cutMenuItem = new MenuItem();
-        cutMenuItem.setOnAction(
-                e -> {
-                    textArea.cut();
-                }
-        );
+        cutMenuItem.setOnAction(e -> textArea.cut());
         cutMenuItem.textProperty().bind(StringPropertyWithLocale.CUT.getProperty());
         MenuItem copyMenuItem = new MenuItem();
-        copyMenuItem.setOnAction(
-                e -> {
-                    textArea.copy();
-                }
-        );
+        copyMenuItem.setOnAction(e -> textArea.copy());
         copyMenuItem.textProperty().bind(StringPropertyWithLocale.COPY.getProperty());
         MenuItem pasteMenuItem = new MenuItem();
-        pasteMenuItem.setOnAction(
-                e -> {
-                    textArea.paste();
-                }
-        );
+        pasteMenuItem.setOnAction(e -> textArea.paste());
         pasteMenuItem.textProperty().bind(StringPropertyWithLocale.PASTE.getProperty());
         MenuItem deleteMenuItem = new MenuItem();
         deleteMenuItem.setOnAction(
@@ -187,11 +174,7 @@ public class MainWindowController implements Initializable {
         );
         deleteMenuItem.textProperty().bind(StringPropertyWithLocale.DELETE.getProperty());
         MenuItem selectMenuItem = new MenuItem();
-        selectMenuItem.setOnAction(
-                e -> {
-                    textArea.selectAll();
-                }
-        );
+        selectMenuItem.setOnAction(e -> textArea.selectAll());
         selectMenuItem.textProperty().bind(StringPropertyWithLocale.SELECT.getProperty());
         editMenu.getItems().addAll(
                 undoMenuItem, repeatMenuItem, cutMenuItem, copyMenuItem,
@@ -230,18 +213,10 @@ public class MainWindowController implements Initializable {
         Menu languageMenu = new Menu();
         languageMenu.textProperty().bind(StringPropertyWithLocale.LANGUAGE.getProperty());
         MenuItem englishMenuItem = new MenuItem();
-        englishMenuItem.setOnAction(
-                e -> {
-                    setLocale(new Locale("en", "EN"));
-                }
-        );
+        englishMenuItem.setOnAction(e -> setLocale(new Locale("en", "EN")));
         englishMenuItem.textProperty().bind(StringPropertyWithLocale.ENGLISH.getProperty());
         MenuItem russianMenuItem = new MenuItem();
-        russianMenuItem.setOnAction(
-                e -> {
-                    setLocale(new Locale("ru", "RU"));
-                }
-        );
+        russianMenuItem.setOnAction(e -> setLocale(new Locale("ru", "RU")));
         russianMenuItem.textProperty().bind(StringPropertyWithLocale.RUSSIAN.getProperty());
         languageMenu.getItems().addAll(englishMenuItem, russianMenuItem);
 
@@ -256,7 +231,35 @@ public class MainWindowController implements Initializable {
         menuBar.getMenus().addAll(fileMenu, editMenu, textMenu, runMenu, languageMenu, helpMenu);
     }
 
-    private void initializeTableView(){
+    private void setupDragAndDrop() {
+        textArea.setOnDragOver(event -> {
+            if (event.getDragboard().hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+            event.consume();
+        });
+
+        textArea.setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+            boolean success = false;
+            if (dragboard.hasFiles()) {
+                File file = dragboard.getFiles().get(0);
+                if (file != null && file.isFile() && file.getName().endsWith(".txt") || file.getName().endsWith(".java")) {
+                    if (saveOrCancel()) {
+                        textArea.setText(fileService.read(file.getAbsolutePath()));
+                    }
+                }
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+
+        textArea.setOnDragExited(event -> {
+            event.consume();
+        });
+    }
+
+    private void initializeTableView() {
         TableColumn<ErrorModel, String> pathColumn = new TableColumn<>();
         pathColumn.textProperty().bind(StringPropertyWithLocale.PATH.getProperty());
         pathColumn.setCellValueFactory(new PropertyValueFactory<>("path"));
@@ -279,6 +282,8 @@ public class MainWindowController implements Initializable {
         KeyCombination cutKeyCombination = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
         KeyCombination cancelKeyCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
         KeyCombination redoKeyCombination = new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN);
+        KeyCombination newKeyCombination = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
+        KeyCombination saveAsKeyCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
 
         textArea.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (cancelKeyCombination.match(keyEvent)) {
@@ -287,6 +292,10 @@ public class MainWindowController implements Initializable {
             } else if (redoKeyCombination.match(keyEvent)) {
                 keyEvent.consume();
                 commandManager.redoCommand();
+            } else if (newKeyCombination.match(keyEvent)) {
+                createNewFile();
+            } else if (saveAsKeyCombination.match(keyEvent)) {
+                saveFile();
             }
         });
 
@@ -324,8 +333,6 @@ public class MainWindowController implements Initializable {
             Text lineNumber = new Text(i + "\n");
             lineNumbers.getChildren().add(lineNumber);
         }
-
-        // Если текст пуст, добавляем хотя бы одну строку
         if (lines.length == 0) {
             Text lineNumber = new Text("1\n");
             lineNumbers.getChildren().add(lineNumber);
@@ -356,6 +363,51 @@ public class MainWindowController implements Initializable {
 
     private boolean isKeyword(String word) {
         return SourceVersion.isKeyword(word);
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    private boolean saveOrCancel() {
+        if (!commandManager.isSaveState()) {
+            switch (Dialog.saveChangeDialog(resourceBundle)) {
+                case CANCEL -> {
+                    return false;
+                }
+                case YES -> {
+                    fileService.save(textArea.getText());
+                    break;
+                }
+                case NO -> {
+                }
+            }
+        }
+        return true;
+    }
+
+    private void openFile() {
+        File file = Dialog.openFileDialog(resourceBundle, stage);
+        if (file == null) {
+            return;
+        }
+        if (saveOrCancel()) {
+            textArea.setText(fileService.read(file.getAbsolutePath()));
+        }
+    }
+
+    private void saveFile() {
+        File file = Dialog.saveFileDialog(resourceBundle, stage);
+        if (file == null) {
+            return;
+        }
+        fileService.save(file.getAbsolutePath(), textArea.getText());
+    }
+
+    private void createNewFile() {
+        if (saveOrCancel()) {
+            textArea.setText("");
+        }
     }
 
 

@@ -11,6 +11,10 @@ public class CommandManager {
 
     private Boolean isCommandExecution;
 
+    private int commandCounter;
+
+    private int saveStateCommandId;
+
     public CommandManager(int commandLimit) {
         doStack = new ArrayDeque<>(commandLimit);
         undoStack = new ArrayDeque<>(commandLimit);
@@ -23,6 +27,8 @@ public class CommandManager {
             Command command = doStack.getFirst();
             Command newCommand = null;
             newCommand = command.copy();
+            newCommand.setId(commandCounter);
+            commandCounter++;
             doStack.push(newCommand);
             newCommand.repeat();
             isCommandExecution = false;
@@ -30,6 +36,8 @@ public class CommandManager {
     }
 
     public void executeCommand(Command command) {
+        command.setId(commandCounter);
+        commandCounter++;
         doStack.push(command);
         undoStack.clear();
         command.execute();
@@ -57,5 +65,13 @@ public class CommandManager {
 
     public Boolean getCommandExecution() {
         return isCommandExecution;
+    }
+
+    public boolean isSaveState() {
+        return doStack.isEmpty() || saveStateCommandId == doStack.getFirst().getId();
+    }
+
+    public void doSaveState() {
+        saveStateCommandId = doStack.getFirst().getId();
     }
 }
