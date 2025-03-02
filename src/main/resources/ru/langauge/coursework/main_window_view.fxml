@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="402.0" prefWidth="600.0" stylesheets="application_theme.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.langauge.coursework.Controller.MainWindowController">
+   <children>
+      <MenuBar fx:id="menuBar" layoutY="2.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+      </MenuBar>
+      <GridPane alignment="CENTER_LEFT" layoutX="-6.0" layoutY="26.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="30.0" prefWidth="600.0" vgap="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="30.0">
+         <children>
+             <Button fx:id="newButton" mnemonicParsing="false" styleClass="squareButton" stylesheets="@application_theme.css" GridPane.columnIndex="0">
+                 <graphic>
+                     <ImageView accessibleRole="BUTTON" disable="true" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                         <image>
+                             <Image url="@create24.png" />
+                         </image>
+                     </ImageView>
+                 </graphic>
+                 <GridPane.margin>
+                     <Insets left="5.0" right="5.0" />
+                 </GridPane.margin>
+            </Button>
+            <Button fx:id="openButton" mnemonicParsing="false" styleClass="squareButton" stylesheets="@application_theme.css" GridPane.columnIndex="1">
+                <graphic>
+                    <ImageView accessibleRole="BUTTON" disable="true" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@open24.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+               <GridPane.margin>
+                  <Insets left="5.0" right="5.0" />
+               </GridPane.margin>
+            </Button>
+            <Button fx:id="saveButton" mnemonicParsing="false" styleClass="squareButton" stylesheets="@application_theme.css" GridPane.columnIndex="2">
+                <graphic>
+                    <ImageView accessibleRole="BUTTON" disable="true" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@save24.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+               <GridPane.margin>
+                  <Insets left="5.0" right="5.0" />
+               </GridPane.margin>
+            </Button>
+            <Button fx:id="undoButton" mnemonicParsing="false" styleClass="squareButton" stylesheets="@application_theme.css" GridPane.columnIndex="4">
+                <graphic>
+                    <ImageView accessibleRole="BUTTON" disable="true" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@undo24.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+               <GridPane.margin>
+                  <Insets left="5.0" right="5.0" />
+               </GridPane.margin>
+            </Button>
+            <Button fx:id="redoButton" mnemonicParsing="false" styleClass="squareButton" stylesheets="@application_theme.css" GridPane.columnIndex="5">
+                <graphic>
+                    <ImageView accessibleRole="BUTTON" disable="true" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@redo24.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+               <GridPane.margin>
+                  <Insets left="5.0" right="5.0" />
+               </GridPane.margin>
+            </Button>
+            <Button fx:id="copyButton" mnemonicParsing="false" styleClass="squareButton" stylesheets="@application_theme.css" GridPane.columnIndex="6">
+                <graphic>
+                    <ImageView accessibleRole="BUTTON" disable="true" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@copy24.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+               <GridPane.margin>
+                  <Insets left="5.0" right="5.0" />
+               </GridPane.margin>
+            </Button>
+            <Button fx:id="cutButton" mnemonicParsing="false" styleClass="squareButton" stylesheets="@application_theme.css" GridPane.columnIndex="7">
+                <graphic>
+                    <ImageView accessibleRole="BUTTON" disable="true" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@cut24.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+               <GridPane.margin>
+                  <Insets left="5.0" right="5.0" />
+               </GridPane.margin>
+            </Button>
+            <Button fx:id="pasteButton" mnemonicParsing="false" styleClass="squareButton" stylesheets="@application_theme.css" GridPane.columnIndex="8">
+                <graphic>
+                    <ImageView accessibleRole="BUTTON" disable="true" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@paste24.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+               <GridPane.margin>
+                  <Insets left="5.0" right="5.0" />
+               </GridPane.margin>
+            </Button>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+         </rowConstraints>
+      </GridPane>
+      <SplitPane dividerPositions="0.5" layoutX="5.0" layoutY="65.0" orientation="VERTICAL" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="70.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <ScrollPane fx:id="workAreaScrollPane" fitToHeight="true" fitToWidth="true" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                     <content>
+                        <AnchorPane>
+                            <TextFlow fx:id="lineNumbers" lineSpacing="1.0" prefWidth="40" style="-fx-background-color: #f0f0f0;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
+                                <Text text="1\n" />
+                            </TextFlow>
+                            <TextFlow fx:id="textAreaHighlights" accessibleRole="TEXT_AREA" depthTest="DISABLE" focusTraversable="true" layoutX="46.0" lineSpacing="1.0" nodeOrientation="LEFT_TO_RIGHT" style="-fx-background-color: #f0f0f0;" styleClass="notScrollArea" stylesheets="@application_theme.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" />
+                            <TextArea fx:id="textArea" depthTest="DISABLE" layoutX="46.0" nodeOrientation="LEFT_TO_RIGHT" opacity="0.26" styleClass="notScrollArea" stylesheets="@application_theme.css" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="46.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        </AnchorPane>
+                     </content>
+                     <effect>
+                        <Glow />
+                     </effect>
+                  </ScrollPane>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <TableView fx:id="errorTableView" layoutX="14.0" layoutY="-42.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

@@ -1,0 +1,27 @@
+.squareButton{
+    -fx-min-height: 25px;
+    -fx-min-width: 25px;
+
+    -fx-pref-width: 100%;
+    -fx-pref-height: 100%;
+
+    -fx-max-height: infinity;
+    -fx-max-width: infinity;
+}
+
+.notScrollArea {
+    -fx-hbar-policy: never;
+    -fx-vbar-policy: never;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+}
+
+.text-area .scroll-pane {
+    -fx-hbar-policy: never;
+    -fx-vbar-policy: never;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-fit-to-width: true;
+    -fx-fit-to-height: true;
+}
