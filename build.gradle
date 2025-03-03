@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'ru.langauge'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 repositories {
     mavenCentral()
@@ -17,8 +17,9 @@ ext {
     junitVersion = '5.10.0'
 }
 
-sourceCompatibility = '21'
-targetCompatibility = '21'
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -26,12 +27,12 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'ru.langauge.coursework'
-    mainClass = 'ru.langauge.coursework.HelloApplication'
+    mainClass = 'ru.langauge.coursework.Main'
 }
 
 javafx {
     version = '21'
-    modules = ['javafx.controls', 'javafx.fxml']
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.graphics']
 }
 
 dependencies {
@@ -47,14 +48,27 @@ test {
     useJUnitPlatform()
 }
 
-jlink {
-    imageZip = project.file("${buildDir}/distributions/app-${javafx.platform.classifier}.zip")
-    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-    launcher {
-        name = 'app'
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'ru.langauge.coursework.Main'
+        )
     }
 }
 
-jlinkZip {
-    group = 'distribution'
+// Настройка jlink и jpackage через плагин org.beryx.jlink
+jlink {
+    launcher {
+        name = 'CodeAnalyzer'
+        jvmArgs = ['-Dfile.encoding=UTF-8']
+    }
+    jpackage {
+        targetPlatformName = 'win'
+        installerType = 'exe'
+        installerOptions = [
+                '--win-menu',
+                '--win-shortcut',
+                '--verbose'
+        ]
+    }
 }

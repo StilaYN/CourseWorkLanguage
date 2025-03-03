@@ -1,5 +1,9 @@
 package ru.langauge.coursework.Controller;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -23,6 +27,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import ru.langauge.coursework.core.FileService;
 import ru.langauge.coursework.view_logic.CommandManager;
 import ru.langauge.coursework.view_logic.ErrorModel;
@@ -69,6 +74,8 @@ public class MainWindowController implements Initializable {
     @FXML
     private TableView<ErrorModel> errorTableView;
 
+    private Timeline scrollTimeline = new Timeline();
+
     private ResourceBundle resourceBundle;
 
     private Stage stage;
@@ -101,10 +108,24 @@ public class MainWindowController implements Initializable {
         });
 
         textArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
-            double caretPosition = newValue.doubleValue();
-            double totalLength = textArea.getLength();
+            int caretPosition = textArea.getCaretPosition();
+            int totalLength = textArea.getLength();
+
             if (totalLength > 0) {
-                workAreaScrollPane.setVvalue(caretPosition / totalLength);
+                double viewportHeight = workAreaScrollPane.getViewportBounds().getHeight();
+                double textAreaHeight = textArea.getHeight();
+                double caretRelativePosition = caretPosition / (double) totalLength;
+                double targetVvalue = caretRelativePosition - (viewportHeight / textAreaHeight) / 10;
+                targetVvalue = Math.min(1, Math.max(0, targetVvalue));
+                scrollTimeline.stop();
+                scrollTimeline.getKeyFrames().clear();
+
+                scrollTimeline.getKeyFrames().add(
+                        new KeyFrame(Duration.millis(200),
+                                new KeyValue(workAreaScrollPane.vvalueProperty(), targetVvalue))
+                );
+
+                scrollTimeline.play();
             }
         });
 
@@ -367,6 +388,11 @@ public class MainWindowController implements Initializable {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+        stage.setOnCloseRequest(event -> {
+            if (!saveOrCancel()) {
+                event.consume();
+            }
+        });
     }
 
     private boolean saveOrCancel() {

@@ -1,0 +1,25 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="CourseWork:jar2">
+    <output-path>$PROJECT_DIR$/out/artifacts/CourseWork_jar2</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="ru.langauge.coursework.HelloApplication" />
+        <option name="convertCss2Bin" value="true" />
+        <option name="description" value="" />
+        <option name="height" value="800" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="all" />
+        <option name="title" value="CodeAnalyzer" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
+        <option name="width" value="1200" />
+      </options>
+    </properties>
+    <root id="archive" name="CourseWork.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="dir-copy" path="C:/javafx-sdk-21/bin" />
+    </root>
+  </artifact>
+</component>
