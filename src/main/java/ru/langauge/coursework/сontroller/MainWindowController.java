@@ -320,6 +320,7 @@ public class MainWindowController implements Initializable {
         KeyCombination redoKeyCombination = new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN);
         KeyCombination newKeyCombination = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
         KeyCombination saveAsKeyCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+        KeyCombination openNewFile = new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN);
 
         textArea.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (cancelKeyCombination.match(keyEvent)) {
@@ -332,6 +333,8 @@ public class MainWindowController implements Initializable {
                 createNewFile();
             } else if (saveAsKeyCombination.match(keyEvent)) {
                 saveFile();
+            } else if (openNewFile.match(keyEvent)) {
+                openFile();
             }
         });
 
