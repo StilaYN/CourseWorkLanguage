@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.HostServices;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -172,6 +173,11 @@ public class MainWindowController implements Initializable {
         saveAsMenuItem.textProperty().bind(StringPropertyWithLocale.SAVE_AS.getProperty());
         MenuItem exitMenuItem = new MenuItem();
         exitMenuItem.textProperty().bind(StringPropertyWithLocale.EXIT.getProperty());
+        exitMenuItem.setOnAction(e -> {
+            if (saveOrCancel()) {
+                Platform.exit();
+            }
+        });
         fileMenu.getItems().addAll(createMenuItem, openMenuItem, saveMenuItem, saveAsMenuItem, exitMenuItem);
 
         Menu editMenu = new Menu();
