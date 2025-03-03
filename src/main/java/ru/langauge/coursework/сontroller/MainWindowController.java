@@ -1,9 +1,9 @@
-package ru.langauge.coursework.Controller;
+package ru.langauge.coursework.сontroller;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
+import javafx.application.HostServices;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -11,7 +11,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -22,26 +21,32 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import ru.langauge.coursework.HelloApplication;
 import ru.langauge.coursework.core.FileService;
 import ru.langauge.coursework.view_logic.CommandManager;
 import ru.langauge.coursework.view_logic.ErrorModel;
 import ru.langauge.coursework.view_logic.TextEditCommand;
 
 import javax.lang.model.SourceVersion;
+import java.awt.*;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.UUID;
+
+import static java.awt.Desktop.getDesktop;
 
 public class MainWindowController implements Initializable {
 
@@ -79,6 +84,8 @@ public class MainWindowController implements Initializable {
     private ResourceBundle resourceBundle;
 
     private Stage stage;
+
+    private HostServices hostServices;
 
     private final CommandManager commandManager = new CommandManager(30);
 
@@ -244,8 +251,10 @@ public class MainWindowController implements Initializable {
         Menu helpMenu = new Menu();
         helpMenu.textProperty().bind(StringPropertyWithLocale.HELP.getProperty());
         MenuItem helpMenuItem = new MenuItem();
+        helpMenuItem.setOnAction(event -> openPageInBrowser("/pages/help.html"));
         helpMenuItem.textProperty().bind(StringPropertyWithLocale.HELP_HELP.getProperty());
         MenuItem aboutMenuItem = new MenuItem();
+        aboutMenuItem.setOnAction(event -> openPageInBrowser("/pages/about.html"));
         aboutMenuItem.textProperty().bind(StringPropertyWithLocale.ABOUT.getProperty());
         helpMenu.getItems().addAll(helpMenuItem, aboutMenuItem);
 
@@ -395,6 +404,10 @@ public class MainWindowController implements Initializable {
         });
     }
 
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
+    }
+
     private boolean saveOrCancel() {
         if (!commandManager.isSaveState()) {
             switch (Dialog.saveChangeDialog(resourceBundle)) {
@@ -433,6 +446,36 @@ public class MainWindowController implements Initializable {
     private void createNewFile() {
         if (saveOrCancel()) {
             textArea.setText("");
+        }
+    }
+
+    private void openPageInBrowser(String path) {
+        try {
+            // Получаем URL локального HTML-файла из ресурсов
+            URL helpPageUrl = getClass().getResource(path);
+            if (helpPageUrl == null) {
+                System.err.println("Файл справки не найден!");
+                return;
+            }
+            UUID uuid = UUID.randomUUID();
+            // Копируем файл во временную директорию
+            File tempFile = File.createTempFile(uuid.toString(), ".html");
+            tempFile.deleteOnExit(); // Удалить файл после завершения работы приложения
+
+            try (InputStream in = helpPageUrl.openStream();
+                 OutputStream out = new FileOutputStream(tempFile)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            }
+
+            // Открываем файл в браузере
+            Desktop.getDesktop().browse(tempFile.toURI());
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Ошибка при открытии HTML-страницы в браузере.");
         }
     }
 

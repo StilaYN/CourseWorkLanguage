@@ -1,9 +1,7 @@
-package ru.langauge.coursework.Controller;
+package ru.langauge.coursework.сontroller;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
-import java.util.Locale;
 
 public enum StringPropertyWithLocale {
     FILE(new SimpleStringProperty(), "menu.file"),

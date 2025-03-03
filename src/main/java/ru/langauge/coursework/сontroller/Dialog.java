@@ -1,13 +1,20 @@
-package ru.langauge.coursework.Controller;
+package ru.langauge.coursework.сontroller;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import static java.awt.Desktop.*;
 
 public class Dialog {
 
@@ -60,5 +67,4 @@ public class Dialog {
         File file = fileChooser.showSaveDialog(stage);
         return file;
     }
-
 }

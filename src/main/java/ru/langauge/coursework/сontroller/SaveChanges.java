@@ -1,4 +1,4 @@
-package ru.langauge.coursework.Controller;
+package ru.langauge.coursework.сontroller;
 
 public enum SaveChanges {
     YES,
