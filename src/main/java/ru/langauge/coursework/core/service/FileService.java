@@ -1,5 +1,6 @@
-package ru.langauge.coursework.core;
+package ru.langauge.coursework.core.service;
 
+import ru.langauge.coursework.core.FileManager;
 import ru.langauge.coursework.view_logic.CommandManager;
 
 import java.util.UUID;

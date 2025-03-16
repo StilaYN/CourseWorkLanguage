@@ -5,6 +5,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -12,6 +13,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -26,11 +28,13 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import ru.langauge.coursework.HelloApplication;
-import ru.langauge.coursework.core.FileService;
+import ru.langauge.coursework.core.mapper.TokenMapper;
+import ru.langauge.coursework.core.service.FileService;
+import ru.langauge.coursework.core.service.TokenScanner;
 import ru.langauge.coursework.view_logic.CommandManager;
 import ru.langauge.coursework.view_logic.ErrorModel;
 import ru.langauge.coursework.view_logic.TextEditCommand;
+import ru.langauge.coursework.view_logic.TokenInfo;
 
 import javax.lang.model.SourceVersion;
 import java.awt.*;
@@ -39,15 +43,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.UUID;
-
-import static java.awt.Desktop.getDesktop;
 
 public class MainWindowController implements Initializable {
 
@@ -80,6 +80,15 @@ public class MainWindowController implements Initializable {
     @FXML
     private TableView<ErrorModel> errorTableView;
 
+    @FXML
+    private TableView<TokenInfo> tokenTableView;
+
+    @FXML
+    private Tab errorTab;
+
+    @FXML
+    private Tab tokenTab;
+
     private Timeline scrollTimeline = new Timeline();
 
     private ResourceBundle resourceBundle;
@@ -89,6 +98,10 @@ public class MainWindowController implements Initializable {
     private HostServices hostServices;
 
     private final CommandManager commandManager = new CommandManager(30);
+
+    private final TokenScanner tokenParserService = new TokenScanner();
+
+    private final TokenMapper tokenMapper = new TokenMapper();
 
     private FileService fileService;
 
@@ -112,6 +125,7 @@ public class MainWindowController implements Initializable {
             }
             updateLineNumbers(newValue);
             updateHighlight(newValue);
+            updateTokenTable(newValue);
 
         });
 
@@ -310,6 +324,26 @@ public class MainWindowController implements Initializable {
         messageColumn.setCellValueFactory(new PropertyValueFactory<>("message"));
 
         errorTableView.getColumns().addAll(pathColumn, line, column, messageColumn);
+
+        TableColumn<TokenInfo, String> tokenTypeColumn = new TableColumn<>();
+        tokenTypeColumn.textProperty().bind(StringPropertyWithLocale.TOKEN_TYPE.getProperty());
+        tokenTypeColumn.setCellValueFactory(new PropertyValueFactory<>("tokenName"));
+        TableColumn<TokenInfo, String> valueColumn = new TableColumn<>();
+        valueColumn.textProperty().bind(StringPropertyWithLocale.VALUE.getProperty());
+        valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
+        TableColumn<TokenInfo, Integer> lineNumberColumn = new TableColumn<>();
+        lineNumberColumn.textProperty().bind(StringPropertyWithLocale.LINE.getProperty());
+        lineNumberColumn.setCellValueFactory(new PropertyValueFactory<>("lineNumber"));
+        TableColumn<TokenInfo, Integer> startColumnColumn = new TableColumn<>();
+        startColumnColumn.textProperty().bind(StringPropertyWithLocale.START_COLUMN.getProperty());
+        startColumnColumn.setCellValueFactory(new PropertyValueFactory<>("startColumn"));
+        TableColumn<TokenInfo, Integer> endColumnColumn = new TableColumn<>();
+        endColumnColumn.textProperty().bind(StringPropertyWithLocale.END_COLUMN.getProperty());
+        endColumnColumn.setCellValueFactory(new PropertyValueFactory<>("endColumn"));
+        tokenTableView.getColumns().addAll(tokenTypeColumn, valueColumn, lineNumberColumn, startColumnColumn, endColumnColumn);
+
+        tokenTab.textProperty().bind(StringPropertyWithLocale.TAB_TOKEN.getProperty());
+        errorTab.textProperty().bind(StringPropertyWithLocale.TAB_ERROR.getProperty());
     }
 
     private void setupKeyboardHotkeys() {
@@ -349,6 +383,17 @@ public class MainWindowController implements Initializable {
         });
 
 
+    }
+
+    private void updateTokenTable(String text) {
+        tokenTableView.setItems(
+                FXCollections.observableList(
+                        tokenMapper.map(
+                                tokenParserService.getTokens(text),
+                                resourceBundle
+                        )
+                )
+        );
     }
 
     private void updateUI() {

@@ -152,11 +152,21 @@
                   </ScrollPane>
                </children>
             </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-               <children>
-                  <TableView fx:id="errorTableView" layoutX="14.0" layoutY="-42.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
-               </children>
-            </AnchorPane>
+            <TabPane fx:id="tabPane" layoutX="14.0" layoutY="-42.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                <tabs>
+                    <Tab fx:id="errorTab">
+                        <content>
+                            <TableView fx:id="errorTableView" />
+                        </content>
+                    </Tab>
+                    <Tab fx:id="tokenTab">
+                        <content>
+                            <TableView fx:id="tokenTableView" />
+                        </content>
+                    </Tab>
+                    <!-- Добавьте больше вкладок по необходимости -->
+                </tabs>
+            </TabPane>
         </items>
       </SplitPane>
    </children>

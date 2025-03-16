@@ -10,4 +10,5 @@ module ru.langauge.coursework {
     exports ru.langauge.coursework;
     exports ru.langauge.coursework.сontroller;
     opens ru.langauge.coursework.сontroller to javafx.fxml;
+    opens ru.langauge.coursework.view_logic to javafx.base;
 }
