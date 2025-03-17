@@ -45,5 +45,11 @@ public class FileService {
         }
     }
 
-
+    public String getCurrentFileName() {
+        if (currentFileName == null) {
+            UUID uuid = UUID.randomUUID();
+            currentFileName = uuid.toString() + ".txt";
+        }
+        return currentFileName;
+    }
 }

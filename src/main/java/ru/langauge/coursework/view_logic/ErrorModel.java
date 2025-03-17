@@ -7,4 +7,19 @@ public record ErrorModel(
         int column
 ) {
 
+    public String getPath() {
+        return path;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public int getColumn() {
+        return column;
+    }
 }

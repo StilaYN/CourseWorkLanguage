@@ -28,8 +28,11 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import ru.langauge.coursework.core.entity.Token;
+import ru.langauge.coursework.core.mapper.ErrorMapper;
 import ru.langauge.coursework.core.mapper.TokenMapper;
 import ru.langauge.coursework.core.service.FileService;
+import ru.langauge.coursework.core.service.TokenParser;
 import ru.langauge.coursework.core.service.TokenScanner;
 import ru.langauge.coursework.view_logic.CommandManager;
 import ru.langauge.coursework.view_logic.ErrorModel;
@@ -78,6 +81,9 @@ public class MainWindowController implements Initializable {
     @FXML
     private Button pasteButton;
     @FXML
+    private Button runButton;
+
+    @FXML
     private TableView<ErrorModel> errorTableView;
 
     @FXML
@@ -99,9 +105,13 @@ public class MainWindowController implements Initializable {
 
     private final CommandManager commandManager = new CommandManager(30);
 
-    private final TokenScanner tokenParserService = new TokenScanner();
+    private final TokenScanner tokenScanner = new TokenScanner();
+
+    private final TokenParser tokenParser = new TokenParser();
 
     private final TokenMapper tokenMapper = new TokenMapper();
+
+    private final ErrorMapper errorMapper = new ErrorMapper();
 
     private FileService fileService;
 
@@ -112,6 +122,8 @@ public class MainWindowController implements Initializable {
         fileService = new FileService(commandManager);
 
         resourceBundle = resources;
+
+        tokenParser.setResourceBundle(resourceBundle);
 
         initializeMenuBar();
         initializeButtonAction();
@@ -125,8 +137,6 @@ public class MainWindowController implements Initializable {
             }
             updateLineNumbers(newValue);
             updateHighlight(newValue);
-            updateTokenTable(newValue);
-
         });
 
         textArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
@@ -165,8 +175,8 @@ public class MainWindowController implements Initializable {
         redoButton.setOnAction(e -> commandManager.repeatCommand());
         copyButton.setOnAction(e -> textArea.copy());
         cutButton.setOnAction(e -> textArea.cut());
-        pasteButton.setOnAction(e -> textArea.paste()
-        );
+        pasteButton.setOnAction(e -> textArea.paste());
+        runButton.setOnAction(e -> runAnalyze());
     }
 
     private void initializeMenuBar() {
@@ -254,6 +264,7 @@ public class MainWindowController implements Initializable {
 
         Menu runMenu = new Menu();
         runMenu.textProperty().bind(StringPropertyWithLocale.RUN.getProperty());
+        runMenu.setOnAction(e -> runAnalyze());
         MenuItem runMenuItem = new MenuItem();
         runMenuItem.textProperty().bind(StringPropertyWithLocale.RUN.getProperty());
         runMenu.getItems().addAll(runMenuItem);
@@ -321,9 +332,20 @@ public class MainWindowController implements Initializable {
         column.setCellValueFactory(new PropertyValueFactory<>("column"));
         TableColumn<ErrorModel, String> messageColumn = new TableColumn<>();
         messageColumn.textProperty().bind(StringPropertyWithLocale.MESSAGE.getProperty());
-        messageColumn.setCellValueFactory(new PropertyValueFactory<>("message"));
+        messageColumn.setCellValueFactory(new PropertyValueFactory<>("error"));
 
         errorTableView.getColumns().addAll(pathColumn, line, column, messageColumn);
+
+        errorTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Platform.runLater(() -> {
+                    textArea.positionCaret(newSelection.getColumn());
+                    textArea.requestFocus();
+                    textArea.deselect();
+                    textArea.selectPositionCaret(newSelection.getColumn());
+                });
+            }
+        });
 
         TableColumn<TokenInfo, String> tokenTypeColumn = new TableColumn<>();
         tokenTypeColumn.textProperty().bind(StringPropertyWithLocale.TOKEN_TYPE.getProperty());
@@ -386,17 +408,30 @@ public class MainWindowController implements Initializable {
     }
 
     private void updateTokenTable(String text) {
+
+        java.util.List<Token> tokenList = tokenScanner.getTokens(text);
+
         tokenTableView.setItems(
                 FXCollections.observableList(
                         tokenMapper.map(
-                                tokenParserService.getTokens(text),
+                                tokenList,
                                 resourceBundle
+                        )
+                )
+        );
+
+        errorTableView.setItems(
+                FXCollections.observableList(
+                        errorMapper.map(
+                                tokenParser.analyzeTokens(tokenList),
+                                fileService
                         )
                 )
         );
     }
 
     private void updateUI() {
+        tokenParser.setResourceBundle(resourceBundle);
         for (StringPropertyWithLocale localeProperty : StringPropertyWithLocale.values()) {
             localeProperty.getProperty().setValue(
                     resourceBundle.getString(localeProperty.getKey())
@@ -531,6 +566,10 @@ public class MainWindowController implements Initializable {
             e.printStackTrace();
             System.err.println("Ошибка при открытии HTML-страницы в браузере.");
         }
+    }
+
+    private void runAnalyze(){
+        updateTokenTable(textArea.getText());
     }
 
 
