@@ -153,7 +153,7 @@
                                 <Text text="1\n" />
                             </TextFlow>
                             <TextFlow fx:id="textAreaHighlights" accessibleRole="TEXT_AREA" depthTest="DISABLE" focusTraversable="true" layoutX="46.0" lineSpacing="1.03" nodeOrientation="LEFT_TO_RIGHT" style="-fx-background-color: #f0f0f0;" styleClass="notScrollArea" stylesheets="@application_theme.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" />
-                            <TextArea fx:id="textArea" blendMode="DARKEN" depthTest="DISABLE" layoutX="46.0" nodeOrientation="LEFT_TO_RIGHT" opacity="0.2" styleClass="notScrollArea" stylesheets="@application_theme.css" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="46.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <TextArea fx:id="textArea" blendMode="DARKEN" depthTest="DISABLE" layoutX="46.0" nodeOrientation="LEFT_TO_RIGHT" opacity="0.4" styleClass="notScrollArea" stylesheets="@application_theme.css" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="46.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                               <opaqueInsets>
                                  <Insets />
                               </opaqueInsets></TextArea>

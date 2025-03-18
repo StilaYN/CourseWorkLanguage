@@ -33,6 +33,7 @@ import ru.langauge.coursework.core.mapper.ErrorMapper;
 import ru.langauge.coursework.core.mapper.TokenMapper;
 import ru.langauge.coursework.core.service.FileService;
 import ru.langauge.coursework.core.service.TokenParser;
+import ru.langauge.coursework.core.service.TokenRecursiveParser;
 import ru.langauge.coursework.core.service.TokenScanner;
 import ru.langauge.coursework.view_logic.CommandManager;
 import ru.langauge.coursework.view_logic.ErrorModel;
@@ -107,7 +108,7 @@ public class MainWindowController implements Initializable {
 
     private final TokenScanner tokenScanner = new TokenScanner();
 
-    private final TokenParser tokenParser = new TokenParser();
+//    private final TokenParser tokenParser = new TokenParser();
 
     private final TokenMapper tokenMapper = new TokenMapper();
 
@@ -123,7 +124,7 @@ public class MainWindowController implements Initializable {
 
         resourceBundle = resources;
 
-        tokenParser.setResourceBundle(resourceBundle);
+//        tokenParser.setResourceBundle(resourceBundle);
 
         initializeMenuBar();
         initializeButtonAction();
@@ -420,10 +421,12 @@ public class MainWindowController implements Initializable {
                 )
         );
 
+        TokenRecursiveParser tokenRecursiveParser = new TokenRecursiveParser(tokenList, resourceBundle);
+
         errorTableView.setItems(
                 FXCollections.observableList(
                         errorMapper.map(
-                                tokenParser.analyzeTokens(tokenList),
+                                tokenRecursiveParser.parse(),
                                 fileService
                         )
                 )
@@ -431,7 +434,7 @@ public class MainWindowController implements Initializable {
     }
 
     private void updateUI() {
-        tokenParser.setResourceBundle(resourceBundle);
+//        tokenParser.setResourceBundle(resourceBundle);
         for (StringPropertyWithLocale localeProperty : StringPropertyWithLocale.values()) {
             localeProperty.getProperty().setValue(
                     resourceBundle.getString(localeProperty.getKey())
