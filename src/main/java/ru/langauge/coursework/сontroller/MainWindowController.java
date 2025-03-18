@@ -32,7 +32,6 @@ import ru.langauge.coursework.core.entity.Token;
 import ru.langauge.coursework.core.mapper.ErrorMapper;
 import ru.langauge.coursework.core.mapper.TokenMapper;
 import ru.langauge.coursework.core.service.FileService;
-import ru.langauge.coursework.core.service.TokenParser;
 import ru.langauge.coursework.core.service.TokenRecursiveParser;
 import ru.langauge.coursework.core.service.TokenScanner;
 import ru.langauge.coursework.view_logic.CommandManager;
