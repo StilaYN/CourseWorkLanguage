@@ -53,9 +53,9 @@ public class TokenRecursiveParser {
                 return start(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.FINAL, errors)) {
                 return getMinErrorList(
+                        start(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.DELETE, errors)),
                         spaceAfterFinal(currentPosition, createErrorList(currentPosition, TokenType.FINAL, ErrorType.PUSH, errors)),
-                        spaceAfterFinal(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.REPLACE, errors)),
-                        start(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.DELETE, errors))
+                        spaceAfterFinal(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.REPLACE, errors))
                 );
             }
             return spaceAfterFinal(currentPosition + 1, errors);
@@ -68,9 +68,9 @@ public class TokenRecursiveParser {
             currentPosition = skipNotValid(currentPosition, TokenType.WHITESPACE, errors);
             if (!match(currentPosition, TokenType.WHITESPACE, errors)) {
                 return getMinErrorList(
+                        spaceAfterFinal(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors)),
                         type(currentPosition, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.PUSH, errors)),
-                        type(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.REPLACE, errors)),
-                        spaceAfterFinal(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors))
+                        type(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.REPLACE, errors))
                 );
             }
             return type(currentPosition + 1, errors);
@@ -85,9 +85,9 @@ public class TokenRecursiveParser {
                 return type(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.INT, errors)) {
                 return getMinErrorList(
+                        type(currentPosition + 1, createErrorList(currentPosition, TokenType.INT, ErrorType.DELETE, errors)),
                         spaceAfterType(currentPosition, createErrorList(currentPosition, TokenType.INT, ErrorType.PUSH, errors)),
-                        spaceAfterType(currentPosition + 1, createErrorList(currentPosition, TokenType.INT, ErrorType.REPLACE, errors)),
-                        type(currentPosition + 1, createErrorList(currentPosition, TokenType.INT, ErrorType.DELETE, errors))
+                        spaceAfterType(currentPosition + 1, createErrorList(currentPosition, TokenType.INT, ErrorType.REPLACE, errors))
                 );
             }
             return spaceAfterType(currentPosition + 1, errors);
@@ -100,9 +100,9 @@ public class TokenRecursiveParser {
             currentPosition = skipNotValid(currentPosition, TokenType.WHITESPACE, errors);
             if (!match(currentPosition, TokenType.WHITESPACE, errors)) {
                 return getMinErrorList(
+                        spaceAfterType(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors)),
                         varName(currentPosition, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.PUSH, errors)),
-                        varName(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.REPLACE, errors)),
-                        spaceAfterType(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors))
+                        varName(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.REPLACE, errors))
                 );
             }
             return varName(currentPosition + 1, errors);
@@ -117,9 +117,9 @@ public class TokenRecursiveParser {
                 return varName(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.VAR_NAME, errors)) {
                 return getMinErrorList(
+                        varName(currentPosition + 1, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.DELETE, errors)),
                         equals(currentPosition, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.PUSH, errors)),
-                        equals(currentPosition + 1, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.REPLACE, errors)),
-                        varName(currentPosition + 1, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.DELETE, errors))
+                        equals(currentPosition + 1, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.REPLACE, errors))
                 );
             }
             return equals(currentPosition + 1, errors);
@@ -134,9 +134,9 @@ public class TokenRecursiveParser {
                 return equals(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.EQUALS, errors)) {
                 return getMinErrorList(
+                        equals(currentPosition + 1, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.DELETE, errors)),
                         number(currentPosition, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.PUSH, errors)),
-                        number(currentPosition + 1, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.REPLACE, errors)),
-                        equals(currentPosition + 1, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.DELETE, errors))
+                        number(currentPosition + 1, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.REPLACE, errors))
                 );
             }
             return number(currentPosition + 1, errors);
@@ -155,9 +155,9 @@ public class TokenRecursiveParser {
                 return end(currentPosition + 1, errors);
             } else {
                 return getMinErrorList(
+                        number(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors)),
                         digit(currentPosition, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.PUSH, errors)),
-                        digit(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors)),
-                        number(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors))
+                        digit(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors))
                 );
             }
         }
@@ -171,9 +171,9 @@ public class TokenRecursiveParser {
                 return digit(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.DIGIT, errors)) {
                 return getMinErrorList(
+                        digit(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors)),
                         end(currentPosition, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.PUSH, errors)),
-                        end(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors)),
-                        digit(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors))
+                        end(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors))
                 );
             }
             return end(currentPosition + 1, errors);
@@ -184,7 +184,7 @@ public class TokenRecursiveParser {
             if (match(currentPosition, TokenType.WHITESPACE, errors))
                 return end(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.END, errors)) {
-                addError(currentPosition-1, TokenType.END, ErrorType.REPLACE, errors);
+                addError(currentPosition-1, TokenType.END, ErrorType.PUSH, errors);
             }
             return errors;
         }
