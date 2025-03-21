@@ -184,7 +184,22 @@ public class TokenRecursiveParser {
             if (match(currentPosition, TokenType.WHITESPACE, errors))
                 return end(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.END, errors)) {
-                addError(currentPosition-1, TokenType.END, ErrorType.PUSH, errors);
+                addError(currentPosition - 1, TokenType.END, ErrorType.PUSH, errors);
+                if (tokens.size() - currentPosition > 1) {
+                    OneLineTokenRecursiveParser parser = new OneLineTokenRecursiveParser(
+                            getSubList(tokens, currentPosition, tokens.size()),
+                            resourceBundle
+                    );
+                    errors.addAll(parser.parse());
+                }
+            } else {
+            if (tokens.size() - currentPosition > 1) {
+                OneLineTokenRecursiveParser parser = new OneLineTokenRecursiveParser(
+                        getSubList(tokens, currentPosition + 1, tokens.size()),
+                        resourceBundle
+                );
+                errors.addAll(parser.parse());
+            }
             }
             return errors;
         }
@@ -262,6 +277,14 @@ public class TokenRecursiveParser {
             List<ErrorEntity> errors = new ArrayList<>(errorEntities);
             addError(currentPosition, expectedTokenType, errorType, errors);
             return errors;
+        }
+
+        private List<Token> getSubList(List<Token> tokens, int startPosition, int endPosition) {
+            List<Token> subTokens = new ArrayList<>();
+            for (int i = startPosition; i < endPosition; i++) {
+                subTokens.add(tokens.get(i));
+            }
+            return subTokens;
         }
     }
 
