@@ -107,8 +107,6 @@ public class MainWindowController implements Initializable {
 
     private final TokenScanner tokenScanner = new TokenScanner();
 
-//    private final TokenParser tokenParser = new TokenParser();
-
     private final TokenMapper tokenMapper = new TokenMapper();
 
     private final ErrorMapper errorMapper = new ErrorMapper();
@@ -122,8 +120,6 @@ public class MainWindowController implements Initializable {
         fileService = new FileService(commandManager);
 
         resourceBundle = resources;
-
-//        tokenParser.setResourceBundle(resourceBundle);
 
         initializeMenuBar();
         initializeButtonAction();
@@ -243,20 +239,28 @@ public class MainWindowController implements Initializable {
         textMenu.textProperty().bind(StringPropertyWithLocale.TEXT.getProperty());
         MenuItem taskMenuItem = new MenuItem();
         taskMenuItem.textProperty().bind(StringPropertyWithLocale.TASK.getProperty());
+        taskMenuItem.setOnAction(e -> openPageInBrowser("/pages/task.html"));
         MenuItem grammarMenuItem = new MenuItem();
         grammarMenuItem.textProperty().bind(StringPropertyWithLocale.GRAMMAR.getProperty());
+        grammarMenuItem.setOnAction(e -> openPageInBrowser("/pages/grammar.html"));
         MenuItem grammarClassMenuItem = new MenuItem();
         grammarClassMenuItem.textProperty().bind(StringPropertyWithLocale.GRAMMAR_CLASS.getProperty());
+        grammarClassMenuItem.setOnAction(e -> openPageInBrowser("/pages/grammar_class.html"));
         MenuItem methodMenuItem = new MenuItem();
         methodMenuItem.textProperty().bind(StringPropertyWithLocale.METHOD.getProperty());
+        methodMenuItem.setOnAction(e -> openPageInBrowser("/pages/method.html"));
         MenuItem diagnosisMenuItem = new MenuItem();
         diagnosisMenuItem.textProperty().bind(StringPropertyWithLocale.DIAGNOSIS.getProperty());
+        diagnosisMenuItem.setOnAction(e -> openPageInBrowser("/pages/diagnosis.html"));
         MenuItem testMenuItem = new MenuItem();
         testMenuItem.textProperty().bind(StringPropertyWithLocale.TEST.getProperty());
+        testMenuItem.setOnAction(e -> openPageInBrowser("/pages/test.html"));
         MenuItem literatureMenuItem = new MenuItem();
         literatureMenuItem.textProperty().bind(StringPropertyWithLocale.LITERATURE.getProperty());
+        testMenuItem.setOnAction(e -> openPageInBrowser("/pages/book.html"));
         MenuItem sourceMenuItem = new MenuItem();
         sourceMenuItem.textProperty().bind(StringPropertyWithLocale.SOURCE_CODE.getProperty());
+        sourceMenuItem.setOnAction(e -> openPageInBrowser("/pages/code.html"));
         textMenu.getItems().addAll(
                 taskMenuItem, grammarMenuItem, grammarClassMenuItem, methodMenuItem,
                 diagnosisMenuItem, testMenuItem, literatureMenuItem, sourceMenuItem

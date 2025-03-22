@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Классификация грамматики G[‹START›]</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #555;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .production {
+            margin-left: 20px;
+            font-family: monospace;
+            color: #0066cc;
+        }
+        .note {
+            margin-left: 20px;
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<h1>Классификация грамматики G[‹START›]</h1>
+
+<p>Согласно классификации Хомского, грамматика <code>G[&lt;START&gt;]</code> является автоматной.</p>
+
+<p>Правила (1)-(13) относятся к классу праворекурсивных продукций (<code>A → aB | a | ε</code>):</p>
+
+<ol>
+    <li><code>&lt;START&gt; -&gt; 'final' &lt;SPACE_AFTER_FINAL&gt;</code></li>
+    <li><code>&lt;SPACE_AFTER_FINAL&gt; -&gt; ' ' &lt;TYPE&gt;</code></li>
+    <li><code>&lt;TYPE&gt; -&gt; 'int' &lt;SPACE_AFTER_TYPE&gt;</code></li>
+    <li><code>&lt;SPACE_AFTER_TYPE&gt; -&gt; ' ' &lt;VAR&gt;</code></li>
+    <li><code>&lt;VAR&gt; -&gt; first_symb &lt;VARREM&gt;</code></li>
+    <li><code>&lt;VARREM&gt; -&gt; symb &lt;VARREM&gt;</code></li>
+    <li><code>&lt;VARREM&gt; -&gt; '=' &lt;NUMBER&gt;</code></li>
+    <li><code>&lt;NUMBER&gt; -&gt; "+" &lt;INT&gt;</code></li>
+    <li><code>&lt;NUMBER&gt; -&gt; "-" &lt;INT&gt;</code></li>
+    <li><code>&lt;INT&gt; -&gt; digit &lt;INTREM&gt;</code></li>
+    <li><code>&lt;NUMBER&gt; -&gt; digit &lt;INTREM&gt;</code></li>
+    <li><code>&lt;INTREM&gt; -&gt; digit &lt;INTREM&gt;</code></li>
+    <li><code>&lt;INTREM&gt; -&gt; ';'</code></li>
+</ol>
+
+<p class="note">Отметим, что правила должны быть либо только леворекурсивными, либо только праворекурсивными. Комбинация тех и других не допускается.</p>
+</body>
+</html>

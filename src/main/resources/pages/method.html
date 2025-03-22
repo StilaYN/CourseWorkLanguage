@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метод анализа грамматики G[‹START›]</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #555;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .figure {
+            text-align: center;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>Метод анализа</h1>
+
+<p>Грамматика <code>G[&lt;START&gt;]</code> является автоматной. Так как автоматная грамматика является подтипом контекстно-свободных грамматик, для её анализа будет использоваться метод рекурсивного спуска.</p>
+
+<p>Идея метода заключается в том, что каждому нетерминальному символу ставится в соответствие программная функция, которая распознает цепочку, порожденную этим нетерминалом. Эти функции вызываются в соответствии с правилами грамматики и могут вызывать сами себя, поэтому для реализации необходимо выбрать язык, обладающий рекурсией. Для реализации программы был выбран язык Java.</p>
+
+<p>На рисунке 1 представлен список процедур и последовательность их вызова. Листинг программной части каждой процедуры представлен в приложении В.</p>
+
+<div class="figure">
+    <img src="method.png" alt="Рисунок 1 - Список процедур">
+    <p>Рисунок 1 - Список процедур</p>
+</div>
+</body>
+</html>

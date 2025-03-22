@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Константы в Java</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .example {
+            margin-left: 20px;
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<h1>Константы в Java</h1>
+
+<p><strong>Константа</strong> — это специальная переменная, значение которой устанавливается при ее объявлении и не может быть изменено в последующем ходе выполнения программы.</p>
+
+<p>Для описания констант в языке Java используется ключевое слово <code>final</code>.</p>
+
+<p>Для описания целочисленных констант в языке Java используется тип <code>int</code>.</p>
+
+<p>Формат записи: <code>final int имя_константы=значение;</code></p>
+
+<h2>Примеры:</h2>
+<ol>
+    <li>
+        Целая положительная десятичная константа без явного указания знака – любое десятичное целое число без знака:
+        <div class="example"><code>final int M=1234;</code></div>
+    </li>
+    <li>
+        Целая положительная десятичная константа с явным указанием знака – любое десятичное целое число со знаком “+”:
+        <div class="example"><code>final int E=+1234;</code></div>
+    </li>
+    <li>
+        Целая отрицательная десятичная константа с явным указанием знака – любое десятичное целое число со знаком “-”:
+        <div class="example"><code>final int E=-1234;</code></div>
+    </li>
+</ol>
+
+<h2>Верные записи констант согласно автоматной грамматике G[<START>]:</h2>
+<ul>
+    <li><code>final int a=1234;</code></li>
+    <li><code>final int b12=-1234;</code></li>
+    <li><code>final int c4=+1234;</code></li>
+</ul>
+</body>
+</html>

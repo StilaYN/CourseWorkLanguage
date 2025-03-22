@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Грамматика целочисленных констант языка Java</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #555;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .production {
+            margin-left: 20px;
+            font-family: monospace;
+            color: #0066cc;
+        }
+        .symbols {
+            margin-left: 20px;
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<h1>Грамматика целочисленных констант языка Java</h1>
+
+<p>Определим грамматику целочисленных констант языка Java <code>G[&lt;START&gt;]</code> в нотации Хомского с продукциями <code>P</code>:</p>
+
+<ol>
+    <li><code>&lt;START&gt; -&gt; 'final' &lt;SPACE_AFTER_FINAL&gt;</code></li>
+    <li><code>&lt;SPACE_AFTER_FINAL&gt; -&gt; ' ' &lt;TYPE&gt;</code></li>
+    <li><code>&lt;TYPE&gt; -&gt; 'int' &lt;SPACE_AFTER_TYPE&gt;</code></li>
+    <li><code>&lt;SPACE_AFTER_TYPE&gt; -&gt; ' ' &lt;VAR&gt;</code></li>
+    <li><code>&lt;VAR&gt; -&gt; first_symb &lt;VARREM&gt;</code></li>
+    <li><code>&lt;VARREM&gt; -&gt; symb &lt;VARREM&gt;</code></li>
+    <li><code>&lt;VARREM&gt; -&gt; '=' &lt;NUMBER&gt;</code></li>
+    <li><code>&lt;NUMBER&gt; -&gt; "+" &lt;INT&gt;</code></li>
+    <li><code>&lt;NUMBER&gt; -&gt; "-" &lt;INT&gt;</code></li>
+    <li><code>&lt;INT&gt; -&gt; digit &lt;INTREM&gt;</code></li>
+    <li><code>&lt;NUMBER&gt; -&gt; digit &lt;INTREM&gt;</code></li>
+    <li><code>&lt;INTREM&gt; -&gt; digit &lt;INTREM&gt;</code></li>
+    <li><code>&lt;INTREM&gt; -&gt; ';'</code></li>
+</ol>
+
+<p>Дополнительные определения:</p>
+<ul>
+    <li><code>digit -&gt; 1|...|0</code></li>
+    <li><code>first_symb -&gt; a|...|z|A|...|Z</code></li>
+    <li><code>symb -&gt; a|...|z|A|...|Z|1|...|9</code></li>
+</ul>
+
+<h2>Составляющие грамматики <code>G[&lt;START&gt;]</code>:</h2>
+<ul>
+    <li><strong>Z</strong> = <code>&lt;START&gt;</code></li>
+    <li><strong>VT</strong> = <code>{a|...|z|A|...|Z|'_'|1|...|9, ' ', 'int', '+', '-', 'final', digit, symb, first_symb}</code></li>
+    <li><strong>VN</strong> = <code>{&lt;START&gt;, &lt;SPACE_AFTER_FINAL&gt;, &lt;SPACE_AFTER_TYPE&gt;, &lt;TYPE&gt;, &lt;VAR&gt;, &lt;VARREM&gt;, &lt;NUMBER&gt;, &lt;INTREM&gt;}</code></li>
+</ul>
+</body>
+</html>

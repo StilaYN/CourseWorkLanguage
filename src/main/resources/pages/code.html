@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Классы Java</title>
+  <!-- Подключение стилей Prism.js -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    pre {
+      background-color: #2d2d2d;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    code {
+      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<h1>Классы Java</h1>
+
+<h2>Класс TokenScanner</h2>
+<pre><code class="language-java">
+package ru.langauge.coursework.core.service;
+
+import ru.langauge.coursework.core.entity.Token;
+import ru.langauge.coursework.core.entity.TokenType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class TokenScanner {
+
+    public List&lt;Token&gt; getTokens(String text) {
+        List&lt;Token&gt; tokens = new ArrayList&lt;&gt;();
+        int position = 0;
+        int lineNumber = 1;
+        while (position &lt; text.length()) {
+            for (TokenType tokenType : TokenType.values()) {
+                Pattern pattern = Pattern.compile("^" + tokenType.getRegex());
+                Matcher matcher = pattern.matcher(text);
+                matcher.region(position, text.length());
+
+                if (matcher.find()) {
+                    String value = matcher.group();
+
+                    if (tokenType == TokenType.END_OF_LINE) {
+                        lineNumber++;
+                    } else {
+                        tokens.add(
+                                new Token(
+                                        tokenType,
+                                        lineNumber,
+                                        position,
+                                        position + value.length()
+                                )
+                        );
+                    }
+                    position += value.length();
+                    break;
+                }
+            }
+        }
+        return tokens;
+    }
+
+}
+    </code></pre>
+
+<h2>Класс TokenRecursiveParser</h2>
+<pre><code class="language-java">
+package ru.langauge.coursework.core.service;
+
+import ru.langauge.coursework.core.entity.ErrorEntity;
+import ru.langauge.coursework.core.entity.ErrorType;
+import ru.langauge.coursework.core.entity.Token;
+import ru.langauge.coursework.core.entity.TokenType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+
+public class TokenRecursiveParser {
+
+    private ResourceBundle resourceBundle;
+    private final List&lt;Token&gt; tokens;
+
+    public TokenRecursiveParser(List&lt;Token&gt; tokens, ResourceBundle resourceBundle) {
+        this.tokens = tokens;
+        this.resourceBundle = resourceBundle;
+    }
+
+    public List&lt;ErrorEntity&gt; parse() {
+        List&lt;ErrorEntity&gt; errors = new ArrayList&lt;&gt;();
+        for (List&lt;Token&gt; line : splitTokensIntoLines(tokens)) {
+            OneLineTokenRecursiveParser onelineTokenRecursiveParser = new OneLineTokenRecursiveParser(line, resourceBundle);
+            errors.addAll(onelineTokenRecursiveParser.parse());
+        }
+        return errors;
+    }
+
+    private class OneLineTokenRecursiveParser {
+
+        private final List&lt;Token&gt; tokens;
+        private final ResourceBundle resourceBundle;
+
+        public OneLineTokenRecursiveParser(List&lt;Token&gt; tokens, ResourceBundle resourceBundle) {
+            this.tokens = tokens;
+            this.resourceBundle = resourceBundle;
+        }
+
+        public List&lt;ErrorEntity&gt; parse() {
+            int currentPosition = 0;
+            List&lt;ErrorEntity&gt; errors = new ArrayList&lt;&gt;();
+            return start(currentPosition, errors);
+        }
+
+        private List&lt;ErrorEntity&gt; start(int currentPosition, List&lt;ErrorEntity&gt; errors) {
+            if (isAtEnd(currentPosition)) {
+                return errors;
+            }
+            currentPosition = skipNotValid(currentPosition, TokenType.FINAL, errors);
+            if (match(currentPosition, TokenType.WHITESPACE, errors))
+                return start(currentPosition + 1, errors);
+            if (!match(currentPosition, TokenType.FINAL, errors)) {
+                return getMinErrorList(
+                        start(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.DELETE, errors)),
+                        spaceAfterFinal(currentPosition, createErrorList(currentPosition, TokenType.FINAL, ErrorType.PUSH, errors)),
+                        spaceAfterFinal(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.REPLACE, errors))
+                );
+            }
+            return spaceAfterFinal(currentPosition + 1, errors);
+        }
+
+        // Остальные методы класса OneLineTokenRecursiveParser...
+    }
+
+    private List&lt;List&lt;Token&gt;&gt; splitTokensIntoLines(List&lt;Token&gt; tokens) {
+        List&lt;List&lt;Token&gt;&gt; lines = new ArrayList&lt;&gt;();
+        List&lt;Token&gt; currentLine = new ArrayList&lt;&gt;();
+
+        for (Token token : tokens) {
+            currentLine.add(token);
+
+            if (token.tokenType() == TokenType.END) {
+                lines.add(currentLine);
+                currentLine = new ArrayList&lt;&gt;();
+            }
+        }
+
+        if (!currentLine.isEmpty()) {
+            lines.add(currentLine);
+        }
+
+        return lines;
+    }
+}
+    </code></pre>
+
+<h2>Класс TokenType</h2>
+<pre><code class="language-java">
+package ru.langauge.coursework.core.entity;
+
+public enum TokenType {
+    FINAL("\\bfinal\\b", "token.name.final"),
+    INT("\\bint\\b", "token.name.int"),
+    VAR_NAME("[a-zA-Z_][a-zA-Z0-9_]*", "token.name.var"),
+    END_OF_LINE("[\\n\\r]", "token.name.line"),
+    WHITESPACE("[^\\S\\n\\r]{1,}", "token.name.whitespace"),
+    EQUALS("=", "token.name.equals"),
+    DIGIT("\\d+", "token.name.digit"),
+    OPERATORS("[+-]", "token.name.operators"),
+    END(";", "token.name.end"),
+    NOT_VALID("[^a-zA-Z0-9_\\s=+\\-;\\n]", "token.name.not_valid");
+
+    private final String regex;
+    private final String description;
+
+    TokenType(String regex, String description) {
+        this.regex = regex;
+        this.description = description;
+    }
+
+    public String getRegex() {
+        return regex;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+}
+    </code></pre>
+
+<h2>Класс ErrorType</h2>
+<pre><code class="language-java">
+package ru.langauge.coursework.core.entity;
+
+public enum ErrorType {
+    REPLACE("error.replace"),
+    DELETE("error.delete"),
+    PUSH("error.push");
+
+    private final String description;
+
+    ErrorType(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+}
+    </code></pre>
+
+<h2>Класс Token</h2>
+<pre><code class="language-java">
+package ru.langauge.coursework.core.entity;
+
+public record Token(
+        TokenType tokenType,
+        int lineNumber,
+        int startColumn,
+        int endColumn
+) {
+}
+    </code></pre>
+
+<!-- Подключение скрипта Prism.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+</body>
+</html>
