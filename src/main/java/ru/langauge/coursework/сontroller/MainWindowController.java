@@ -254,10 +254,10 @@ public class MainWindowController implements Initializable {
         diagnosisMenuItem.setOnAction(e -> openPageInBrowser("/pages/diagnosis.html"));
         MenuItem testMenuItem = new MenuItem();
         testMenuItem.textProperty().bind(StringPropertyWithLocale.TEST.getProperty());
-        testMenuItem.setOnAction(e -> openPageInBrowser("/pages/test.html"));
+        testMenuItem.setOnAction(e -> openPageInBrowser("/pages/test_example.html"));
         MenuItem literatureMenuItem = new MenuItem();
         literatureMenuItem.textProperty().bind(StringPropertyWithLocale.LITERATURE.getProperty());
-        testMenuItem.setOnAction(e -> openPageInBrowser("/pages/book.html"));
+        literatureMenuItem.setOnAction(e -> openPageInBrowser("/pages/book.html"));
         MenuItem sourceMenuItem = new MenuItem();
         sourceMenuItem.textProperty().bind(StringPropertyWithLocale.SOURCE_CODE.getProperty());
         sourceMenuItem.setOnAction(e -> openPageInBrowser("/pages/code.html"));
@@ -437,7 +437,6 @@ public class MainWindowController implements Initializable {
     }
 
     private void updateUI() {
-//        tokenParser.setResourceBundle(resourceBundle);
         for (StringPropertyWithLocale localeProperty : StringPropertyWithLocale.values()) {
             localeProperty.getProperty().setValue(
                     resourceBundle.getString(localeProperty.getKey())
