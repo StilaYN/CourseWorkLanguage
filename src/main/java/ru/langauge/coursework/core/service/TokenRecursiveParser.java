@@ -53,9 +53,9 @@ public class TokenRecursiveParser {
                 return start(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.FINAL, errors)) {
                 return getMinErrorList(
+                        spaceAfterFinal(currentPosition, createErrorList(currentPosition, TokenType.FINAL, ErrorType.PUSH, errors)),
                         spaceAfterFinal(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.REPLACE, errors)),
-                        start(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.DELETE, errors)),
-                        spaceAfterFinal(currentPosition, createErrorList(currentPosition, TokenType.FINAL, ErrorType.PUSH, errors))
+                        start(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.DELETE, errors))
                 );
             }
             return spaceAfterFinal(currentPosition + 1, errors);
@@ -85,9 +85,9 @@ public class TokenRecursiveParser {
                 return type(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.INT, errors)) {
                 return getMinErrorList(
+                        spaceAfterType(currentPosition, createErrorList(currentPosition, TokenType.INT, ErrorType.PUSH, errors)),
                         spaceAfterType(currentPosition + 1, createErrorList(currentPosition, TokenType.INT, ErrorType.REPLACE, errors)),
-                        type(currentPosition + 1, createErrorList(currentPosition, TokenType.INT, ErrorType.DELETE, errors)),
-                        spaceAfterType(currentPosition, createErrorList(currentPosition, TokenType.INT, ErrorType.PUSH, errors))
+                        type(currentPosition + 1, createErrorList(currentPosition, TokenType.INT, ErrorType.DELETE, errors))
                 );
             }
             return spaceAfterType(currentPosition + 1, errors);
@@ -100,9 +100,9 @@ public class TokenRecursiveParser {
             currentPosition = skipNotValid(currentPosition, TokenType.WHITESPACE, errors);
             if (!match(currentPosition, TokenType.WHITESPACE, errors)) {
                 return getMinErrorList(
+                        varName(currentPosition, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.PUSH, errors)),
                         varName(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.REPLACE, errors)),
-                        spaceAfterType(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors)),
-                        varName(currentPosition, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.PUSH, errors))
+                        spaceAfterType(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors))
                 );
             }
             return varName(currentPosition + 1, errors);
@@ -117,9 +117,9 @@ public class TokenRecursiveParser {
                 return varName(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.VAR_NAME, errors)) {
                 return getMinErrorList(
+                        equals(currentPosition, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.PUSH, errors)),
                         equals(currentPosition + 1, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.REPLACE, errors)),
-                        varName(currentPosition + 1, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.DELETE, errors)),
-                        equals(currentPosition, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.PUSH, errors))
+                        varName(currentPosition + 1, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.DELETE, errors))
                 );
             }
             return equals(currentPosition + 1, errors);
@@ -134,9 +134,9 @@ public class TokenRecursiveParser {
                 return equals(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.EQUALS, errors)) {
                 return getMinErrorList(
+                        number(currentPosition, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.PUSH, errors)),
                         number(currentPosition + 1, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.REPLACE, errors)),
-                        equals(currentPosition + 1, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.DELETE, errors)),
-                        number(currentPosition, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.PUSH, errors))
+                        equals(currentPosition + 1, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.DELETE, errors))
                 );
             }
             return number(currentPosition + 1, errors);
@@ -167,9 +167,9 @@ public class TokenRecursiveParser {
                 return digit(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.DIGIT, errors)) {
                 return getMinErrorList(
-                        end(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors)),
                         end(currentPosition, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.PUSH, errors)),
-                        digit(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors))
+                        digit(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors)),
+                        end(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors))
                 );
             }
             return end(currentPosition + 1, errors);
@@ -187,7 +187,7 @@ public class TokenRecursiveParser {
                 addError(currentPosition , TokenType.END, ErrorType.REPLACE, errors);
                 if (tokens.size() - currentPosition > 1) {
                     OneLineTokenRecursiveParser parser = new OneLineTokenRecursiveParser(
-                            getSubList(tokens, currentPosition, tokens.size()),
+                            getSubList(tokens, currentPosition + 1, tokens.size()),
                             resourceBundle
                     );
                     errors.addAll(parser.parse());
