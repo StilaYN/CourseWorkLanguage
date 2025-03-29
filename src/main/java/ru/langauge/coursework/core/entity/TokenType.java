@@ -10,7 +10,7 @@ public enum TokenType {
     DIGIT("\\d+", "token.name.digit"),
     OPERATORS("[+-]", "token.name.operators"),
     END(";", "token.name.end"),
-    NOT_VALID("[^a-zA-Z0-9_\\s=+\\-;\\n]", "token.name.not_valid"),
+    NOT_VALID("[^a-zA-Z0-9_\\s=+\\-;\\n]*", "token.name.not_valid"),
     ;
     private final String regex;
 

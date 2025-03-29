@@ -29,6 +29,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import ru.langauge.coursework.core.entity.Token;
+import ru.langauge.coursework.core.entity.TokenScannerResult;
 import ru.langauge.coursework.core.mapper.ErrorMapper;
 import ru.langauge.coursework.core.mapper.TokenMapper;
 import ru.langauge.coursework.core.service.FileService;
@@ -120,6 +121,8 @@ public class MainWindowController implements Initializable {
         fileService = new FileService(commandManager);
 
         resourceBundle = resources;
+
+        tokenScanner.setResourceBundle(resourceBundle);
 
         initializeMenuBar();
         initializeButtonAction();
@@ -413,6 +416,7 @@ public class MainWindowController implements Initializable {
 
     private void updateTokenTable(String text) {
 
+        tokenScanner.setResourceBundle(resourceBundle);
         java.util.List<Token> tokenList = tokenScanner.getTokens(text);
 
         tokenTableView.setItems(
@@ -423,8 +427,13 @@ public class MainWindowController implements Initializable {
                         )
                 )
         );
+        TokenScannerResult tokenScannerResult = tokenScanner.getTokenScannerResult(text);
 
-        TokenRecursiveParser tokenRecursiveParser = new TokenRecursiveParser(tokenList, resourceBundle);
+        TokenRecursiveParser tokenRecursiveParser = new TokenRecursiveParser(
+                tokenScannerResult.tokens(),
+                tokenScannerResult.errors(),
+                resourceBundle
+        );
 
         errorTableView.setItems(
                 FXCollections.observableList(

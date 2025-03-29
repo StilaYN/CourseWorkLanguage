@@ -1,11 +1,9 @@
 package ru.langauge.coursework.core.service;
 
-import ru.langauge.coursework.core.entity.ErrorEntity;
-import ru.langauge.coursework.core.entity.ErrorType;
-import ru.langauge.coursework.core.entity.Token;
-import ru.langauge.coursework.core.entity.TokenType;
+import ru.langauge.coursework.core.entity.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -13,9 +11,11 @@ public class TokenRecursiveParser {
 
     private ResourceBundle resourceBundle;
     private final List<Token> tokens;
+    private final List<ErrorEntity> errorsEntity;
 
-    public TokenRecursiveParser(List<Token> tokens, ResourceBundle resourceBundle) {
+    public TokenRecursiveParser(List<Token> tokens, List<ErrorEntity> errors, ResourceBundle resourceBundle) {
         this.tokens = tokens;
+        this.errorsEntity = errors;
         this.resourceBundle = resourceBundle;
     }
 
@@ -25,7 +25,8 @@ public class TokenRecursiveParser {
             OneLineTokenRecursiveParser onelineTokenRecursiveParser = new OneLineTokenRecursiveParser(line, resourceBundle);
             errors.addAll(onelineTokenRecursiveParser.parse());
         }
-        return errors;
+        errors.addAll(errorsEntity);
+        return errors.stream().sorted(Comparator.comparing(ErrorEntity::column)).toList();
     }
 
     private class OneLineTokenRecursiveParser {
@@ -184,22 +185,8 @@ public class TokenRecursiveParser {
             if (match(currentPosition, TokenType.WHITESPACE, errors))
                 return end(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.END, errors)) {
-                addError(currentPosition , TokenType.END, ErrorType.REPLACE, errors);
-                if (tokens.size() - currentPosition > 1) {
-                    OneLineTokenRecursiveParser parser = new OneLineTokenRecursiveParser(
-                            getSubList(tokens, currentPosition + 1, tokens.size()),
-                            resourceBundle
-                    );
-                    errors.addAll(parser.parse());
-                }
-            } else {
-            if (tokens.size() - currentPosition > 1) {
-                OneLineTokenRecursiveParser parser = new OneLineTokenRecursiveParser(
-                        getSubList(tokens, currentPosition + 1, tokens.size()),
-                        resourceBundle
-                );
-                errors.addAll(parser.parse());
-            }
+                addError(currentPosition , TokenType.END, ErrorType.PUSH, errors);
+                addError(currentPosition, TokenType.END, ErrorType.DELETE_END, errors);
             }
             return errors;
         }
@@ -247,7 +234,7 @@ public class TokenRecursiveParser {
         private String createErrorMessage(int currentPosition, TokenType expectedTokentype, ErrorType errorType) {
 
             return switch (errorType) {
-                case DELETE -> resourceBundle.getString(errorType.getDescription()) + ":'"
+                case DELETE, DELETE_END -> resourceBundle.getString(errorType.getDescription()) + ":'"
                         + resourceBundle.getString(getToken(currentPosition).tokenType().getDescription()) + "'";
                 case PUSH -> resourceBundle.getString(errorType.getDescription()) + ":'"
                         + resourceBundle.getString(expectedTokentype.getDescription()) + "'";

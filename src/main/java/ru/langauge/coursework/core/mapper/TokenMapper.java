@@ -15,7 +15,7 @@ public class TokenMapper {
                             token.tokenType().name(),
                             resourceBundle.getString(token.tokenType().getDescription()),
                             token.lineNumber(),
-                            token.startColumn()+1,
+                            token.startColumn(),
                             token.endColumn()
                     );
                 })
