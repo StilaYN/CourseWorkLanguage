@@ -168,8 +168,8 @@ public class TokenRecursiveParser {
                 return digit(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.DIGIT, errors)) {
                 return getMinErrorList(
-                        end(currentPosition, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.PUSH, errors)),
                         digit(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors)),
+                        end(currentPosition, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.PUSH, errors)),
                         end(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors))
                 );
             }
@@ -185,8 +185,8 @@ public class TokenRecursiveParser {
             if (match(currentPosition, TokenType.WHITESPACE, errors))
                 return end(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.END, errors)) {
-                addError(currentPosition , TokenType.END, ErrorType.PUSH, errors);
-                addError(currentPosition, TokenType.END, ErrorType.DELETE_END, errors);
+                addError(currentPosition, TokenType.END, ErrorType.REPLACE, errors);
+                end(currentPosition + 1, errors);
             }
             return errors;
         }
