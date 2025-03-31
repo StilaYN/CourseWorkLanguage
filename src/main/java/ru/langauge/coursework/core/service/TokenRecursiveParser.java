@@ -179,13 +179,20 @@ public class TokenRecursiveParser {
         private List<ErrorEntity> end(int currentPosition, List<ErrorEntity> errors) {
             currentPosition = skipNotValid(currentPosition, TokenType.END, errors);
             if (isAtEnd(currentPosition)) {
-                addError(currentPosition - 1, TokenType.END, ErrorType.PUSH, errors);
+                //addError(currentPosition - 1, TokenType.END, ErrorType.PUSH, errors);
+                errors.add(
+                        new ErrorEntity(
+                                createErrorMessage(currentPosition, TokenType.END, ErrorType.PUSH),
+                                getToken(currentPosition - 1).lineNumber(),
+                                getToken(currentPosition - 1).endColumn()
+                        )
+                );
                 return errors;
             }
             if (match(currentPosition, TokenType.WHITESPACE, errors))
                 return end(currentPosition + 1, errors);
             if (!match(currentPosition, TokenType.END, errors)) {
-                addError(currentPosition, TokenType.END, ErrorType.REPLACE, errors);
+                addError(currentPosition, TokenType.END, ErrorType.DELETE, errors);
                 end(currentPosition + 1, errors);
             }
             return errors;
