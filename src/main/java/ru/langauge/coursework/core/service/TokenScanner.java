@@ -31,6 +31,9 @@ public class TokenScanner {
 
                     if (tokenType == TokenType.END_OF_LINE) {
                         lineNumber++;
+                    } else if (tokenType == TokenType.WHITESPACE) {
+                        position += value.length();
+                        break;
                     } else {
                         tokens.add(
                                 new Token(

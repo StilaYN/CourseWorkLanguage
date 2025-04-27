@@ -12,6 +12,7 @@ public class TokenRecursiveParser {
     private ResourceBundle resourceBundle;
     private final List<Token> tokens;
     private final List<ErrorEntity> errorsEntity;
+    private int openBracketCount = 0;
 
     public TokenRecursiveParser(List<Token> tokens, List<ErrorEntity> errors, ResourceBundle resourceBundle) {
         this.tokens = tokens;
@@ -41,162 +42,126 @@ public class TokenRecursiveParser {
 
         public List<ErrorEntity> parse() {
             int currentPosition = 0;
+            tokens.add(new Token(TokenType.WHITESPACE,0,0,0));
             List<ErrorEntity> errors = new ArrayList<>();
-            return start(currentPosition, errors);
+            ParserTuple tuple = expression(currentPosition, errors);
+            return end(tuple.currentPosition(), tuple.errors());
         }
 
-        private List<ErrorEntity> start(int currentPosition, List<ErrorEntity> errors) {
+        private ParserTuple expression(int currentPosition, List<ErrorEntity> errors) {
             if (isAtEnd(currentPosition)) {
-                return errors;
+                return new ParserTuple(currentPosition, errors);
             }
-            currentPosition = skipNotValid(currentPosition, TokenType.FINAL, errors);
-            if (match(currentPosition, TokenType.WHITESPACE, errors))
-                return start(currentPosition + 1, errors);
-            if (!match(currentPosition, TokenType.FINAL, errors)) {
-                return getMinErrorList(
-                        spaceAfterFinal(currentPosition, createErrorList(currentPosition, TokenType.FINAL, ErrorType.PUSH, errors)),
-                        spaceAfterFinal(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.REPLACE, errors)),
-                        start(currentPosition + 1, createErrorList(currentPosition, TokenType.FINAL, ErrorType.DELETE, errors))
-                );
-            }
-            return spaceAfterFinal(currentPosition + 1, errors);
+            ParserTuple tuple = t(currentPosition, errors);
+            return a(tuple.currentPosition(), tuple.errors());
         }
 
-        private List<ErrorEntity> spaceAfterFinal(int currentPosition, List<ErrorEntity> errors) {
+        private ParserTuple t(int currentPosition, List<ErrorEntity> errors) {
             if (isAtEnd(currentPosition)) {
-                return errors;
+                return new ParserTuple(currentPosition, errors);
             }
-            currentPosition = skipNotValid(currentPosition, TokenType.WHITESPACE, errors);
-            if (!match(currentPosition, TokenType.WHITESPACE, errors)) {
-                return getMinErrorList(
-                        type(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.REPLACE, errors)),
-                        spaceAfterFinal(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors)),
-                        type(currentPosition, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.PUSH, errors))
-                );
-            }
-            return type(currentPosition + 1, errors);
+            ParserTuple tuple = o(currentPosition, errors);
+            return b(tuple.currentPosition(), tuple.errors());
         }
 
-        private List<ErrorEntity> type(int currentPosition, List<ErrorEntity> errors) {
+        private ParserTuple o(int currentPosition, List<ErrorEntity> errors) {
             if (isAtEnd(currentPosition)) {
-                return errors;
+                return new ParserTuple(currentPosition, errors);
             }
-            currentPosition = skipNotValid(currentPosition, TokenType.INT, errors);
-            if (match(currentPosition, TokenType.WHITESPACE, errors))
-                return type(currentPosition + 1, errors);
-            if (!match(currentPosition, TokenType.INT, errors)) {
-                return getMinErrorList(
-                        spaceAfterType(currentPosition, createErrorList(currentPosition, TokenType.INT, ErrorType.PUSH, errors)),
-                        spaceAfterType(currentPosition + 1, createErrorList(currentPosition, TokenType.INT, ErrorType.REPLACE, errors)),
-                        type(currentPosition + 1, createErrorList(currentPosition, TokenType.INT, ErrorType.DELETE, errors))
-                );
-            }
-            return spaceAfterType(currentPosition + 1, errors);
-        }
-
-        private List<ErrorEntity> spaceAfterType(int currentPosition, List<ErrorEntity> errors) {
-            if (isAtEnd(currentPosition)) {
-                return errors;
-            }
-            currentPosition = skipNotValid(currentPosition, TokenType.WHITESPACE, errors);
-            if (!match(currentPosition, TokenType.WHITESPACE, errors)) {
-                return getMinErrorList(
-                        varName(currentPosition, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.PUSH, errors)),
-                        varName(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.REPLACE, errors)),
-                        spaceAfterType(currentPosition + 1, createErrorList(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors))
-                );
-            }
-            return varName(currentPosition + 1, errors);
-        }
-
-        private List<ErrorEntity> varName(int currentPosition, List<ErrorEntity> errors) {
-            if (isAtEnd(currentPosition)) {
-                return errors;
-            }
-            currentPosition = skipNotValid(currentPosition, TokenType.VAR_NAME, errors);
-            if (match(currentPosition, TokenType.WHITESPACE, errors))
-                return varName(currentPosition + 1, errors);
-            if (!match(currentPosition, TokenType.VAR_NAME, errors)) {
-                return getMinErrorList(
-                        equals(currentPosition, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.PUSH, errors)),
-                        equals(currentPosition + 1, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.REPLACE, errors)),
-                        varName(currentPosition + 1, createErrorList(currentPosition, TokenType.VAR_NAME, ErrorType.DELETE, errors))
-                );
-            }
-            return equals(currentPosition + 1, errors);
-        }
-
-        private List<ErrorEntity> equals(int currentPosition, List<ErrorEntity> errors) {
-            if (isAtEnd(currentPosition)) {
-                return errors;
-            }
-            currentPosition = skipNotValid(currentPosition, TokenType.EQUALS, errors);
-            if (match(currentPosition, TokenType.WHITESPACE, errors))
-                return equals(currentPosition + 1, errors);
-            if (!match(currentPosition, TokenType.EQUALS, errors)) {
-                return getMinErrorList(
-                        number(currentPosition, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.PUSH, errors)),
-                        number(currentPosition + 1, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.REPLACE, errors)),
-                        equals(currentPosition + 1, createErrorList(currentPosition, TokenType.EQUALS, ErrorType.DELETE, errors))
-                );
-            }
-            return number(currentPosition + 1, errors);
-        }
-
-        private List<ErrorEntity> number(int currentPosition, List<ErrorEntity> errors) {
-            if (isAtEnd(currentPosition)) {
-                return errors;
-            }
-            currentPosition = skipNotValid(currentPosition, TokenType.DIGIT, errors);
-            if (match(currentPosition, TokenType.WHITESPACE, errors))
-                return number(currentPosition + 1, errors);
-            if (match(currentPosition, TokenType.OPERATORS, errors)) {
-                return digit(currentPosition + 1, errors);
-            } else if (match(currentPosition, TokenType.DIGIT, errors)) {
-                return digit(currentPosition, errors);
+            if (match(currentPosition, TokenType.DIGIT, errors)) {
+                return new ParserTuple(currentPosition + 1, errors);
+            } else if (match(currentPosition, TokenType.OPEN_BRACKET, errors)) {
+                openBracketCount++;
+                ParserTuple tuple = expression(currentPosition + 1, errors);
+                openBracketCount--;
+                return closeBracket(tuple.currentPosition(), tuple.errors());
             } else {
-                return digit(currentPosition, errors);
+                if (openBracketCount == 0 && match(currentPosition, TokenType.CLOSE_BRACKET, errors))
+                {
+                    addError(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors);
+                    return new ParserTuple(currentPosition + 1, errors);
+                } else
+                {
+                    addError(currentPosition, TokenType.DIGIT, ErrorType.PUSH, errors);
+                }
+            }
+            return new ParserTuple(currentPosition, errors);
+        }
+
+        private ParserTuple b(int currentPosition, List<ErrorEntity> errors) {
+            if (isAtEnd(currentPosition)) {
+                return new ParserTuple(currentPosition, errors);
+            }
+            if (match(currentPosition, TokenType.OPEN_BRACKET, errors) || match(currentPosition, TokenType.DIGIT, errors)) {
+                addError(currentPosition, TokenType.MULTIPLY_OPERATORS, ErrorType.PUSH, errors);
+                ParserTuple tuple = t(currentPosition, errors);
+                return b(tuple.currentPosition(), tuple.errors());
+            } else if (match(currentPosition, TokenType.MULTIPLY_OPERATORS, errors)) {
+                ParserTuple tuple = t(currentPosition + 1, errors);
+                return b(tuple.currentPosition(), tuple.errors());
+            } else if (openBracketCount == 0 && match(currentPosition, TokenType.CLOSE_BRACKET, errors)
+                    && (match(currentPosition + 1, TokenType.MULTIPLY_OPERATORS, errors)
+                    || match(currentPosition + 1, TokenType.CLOSE_BRACKET, errors))) {
+                addError(currentPosition, TokenType.MULTIPLY_OPERATORS, ErrorType.DELETE, errors);
+                return b(currentPosition + 1, errors);
+            } else {
+                return new ParserTuple(currentPosition, errors);
             }
         }
 
-        private List<ErrorEntity> digit(int currentPosition, List<ErrorEntity> errors) {
+        private ParserTuple closeBracket(int currentPosition, List<ErrorEntity> errors) {
             if (isAtEnd(currentPosition)) {
-                return errors;
+                addError(currentPosition - 1, TokenType.CLOSE_BRACKET, ErrorType.PUSH, errors);
+                return new ParserTuple(currentPosition, errors);
             }
-            currentPosition = skipNotValid(currentPosition, TokenType.DIGIT, errors);
-            if (match(currentPosition, TokenType.WHITESPACE, errors))
-                return digit(currentPosition + 1, errors);
-            if (!match(currentPosition, TokenType.DIGIT, errors)) {
-                return getMinErrorList(
-                        digit(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors)),
-                        end(currentPosition, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.PUSH, errors)),
-                        end(currentPosition + 1, createErrorList(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors))
-                );
+            if (!match(currentPosition, TokenType.CLOSE_BRACKET, errors)) {
+                addError(currentPosition, TokenType.CLOSE_BRACKET, ErrorType.PUSH, errors);
+                return new ParserTuple(currentPosition, errors);
             }
-            return end(currentPosition + 1, errors);
+            return new ParserTuple(currentPosition + 1, errors);
+        }
+
+
+        private ParserTuple a(int currentPosition, List<ErrorEntity> errors) {
+            if (isAtEnd(currentPosition)) {
+                return new ParserTuple(currentPosition, errors);
+            }
+            if (match(currentPosition, TokenType.OPEN_BRACKET, errors) || match(currentPosition, TokenType.DIGIT, errors)) {
+                addError(currentPosition, TokenType.PLUS_OPERATORS, ErrorType.PUSH, errors);
+                ParserTuple tuple = t(currentPosition, errors);
+                return a(tuple.currentPosition(), tuple.errors());
+            } else if (match(currentPosition, TokenType.PLUS_OPERATORS, errors)) {
+                ParserTuple tuple = t(currentPosition + 1, errors);
+                return a(tuple.currentPosition(), tuple.errors());
+            } else if (openBracketCount == 0 && match(currentPosition, TokenType.CLOSE_BRACKET, errors)
+                    && (match(currentPosition + 1, TokenType.PLUS_OPERATORS, errors)
+                    || match(currentPosition + 1, TokenType.CLOSE_BRACKET, errors))) {
+                addError(currentPosition, TokenType.PLUS_OPERATORS, ErrorType.DELETE, errors);
+                return a(currentPosition + 1, errors);
+            } else {
+                return new ParserTuple(currentPosition, errors);
+            }
         }
 
         private List<ErrorEntity> end(int currentPosition, List<ErrorEntity> errors) {
-            currentPosition = skipNotValid(currentPosition, TokenType.END, errors);
             if (isAtEnd(currentPosition)) {
                 //addError(currentPosition - 1, TokenType.END, ErrorType.PUSH, errors);
                 errors.add(
                         new ErrorEntity(
-                                createErrorMessage(currentPosition, TokenType.END, ErrorType.PUSH),
+                                createErrorMessage(currentPosition, TokenType.WHITESPACE, ErrorType.PUSH),
                                 getToken(currentPosition - 1).lineNumber(),
                                 getToken(currentPosition - 1).endColumn()
                         )
                 );
                 return errors;
             }
-            if (match(currentPosition, TokenType.WHITESPACE, errors))
-                return end(currentPosition + 1, errors);
-            if (!match(currentPosition, TokenType.END, errors)) {
-                addError(currentPosition, TokenType.END, ErrorType.DELETE, errors);
+            if (!match(currentPosition, TokenType.WHITESPACE, errors)) {
+                addError(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors);
                 end(currentPosition + 1, errors);
             }
             return errors;
         }
+
 
         private boolean match(int currentPosition, TokenType expectedTokentype, List<ErrorEntity> errors) {
             return check(currentPosition, expectedTokentype, errors);
@@ -208,14 +173,6 @@ public class TokenRecursiveParser {
             } else {
                 return getToken(currentPosition).tokenType() == expectedTokenType;
             }
-        }
-
-        private int skipNotValid(int currentPosition, TokenType expectedTokentype, List<ErrorEntity> errors) {
-            while (!isAtEnd(currentPosition) && getToken(currentPosition).tokenType() == TokenType.NOT_VALID) {
-                addError(currentPosition, expectedTokentype, ErrorType.DELETE, errors);
-                currentPosition++;
-            }
-            return currentPosition;
         }
 
         private boolean isAtEnd(int currentPosition) {
@@ -262,6 +219,16 @@ public class TokenRecursiveParser {
             }
         }
 
+        private ParserTuple getMinErrorList(ParserTuple e1, ParserTuple e2, ParserTuple e3) {
+            if (e1.errors().size() <= e2.errors().size() && e1.errors().size() <= e3.errors().size()) {
+                return e1;
+            } else if (e2.errors().size() <= e1.errors().size() && e2.errors().size() <= e3.errors().size()) {
+                return e2;
+            } else {
+                return e3;
+            }
+        }
+
         private List<ErrorEntity> createErrorList(
                 int currentPosition,
                 TokenType expectedTokenType,
@@ -272,33 +239,12 @@ public class TokenRecursiveParser {
             addError(currentPosition, expectedTokenType, errorType, errors);
             return errors;
         }
-
-        private List<Token> getSubList(List<Token> tokens, int startPosition, int endPosition) {
-            List<Token> subTokens = new ArrayList<>();
-            for (int i = startPosition; i < endPosition; i++) {
-                subTokens.add(tokens.get(i));
-            }
-            return subTokens;
-        }
     }
 
     private List<List<Token>> splitTokensIntoLines(List<Token> tokens) {
         List<List<Token>> lines = new ArrayList<>();
         List<Token> currentLine = new ArrayList<>();
-
-        for (Token token : tokens) {
-            currentLine.add(token);
-
-            if (token.tokenType() == TokenType.END) {
-                lines.add(currentLine);
-                currentLine = new ArrayList<>();
-            }
-        }
-
-        if (!currentLine.isEmpty()) {
-            lines.add(currentLine);
-        }
-
+        lines.add(tokens);
         return lines;
     }
 }

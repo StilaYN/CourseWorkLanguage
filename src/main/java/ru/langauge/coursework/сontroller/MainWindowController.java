@@ -13,17 +13,10 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -42,11 +35,7 @@ import ru.langauge.coursework.view_logic.TokenInfo;
 
 import javax.lang.model.SourceVersion;
 import java.awt.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Locale;
@@ -417,7 +406,7 @@ public class MainWindowController implements Initializable {
     private void updateTokenTable(String text) {
 
         tokenScanner.setResourceBundle(resourceBundle);
-        java.util.List<Token> tokenList = tokenScanner.getTokens(text);
+        java.util.List<Token> tokenList = tokenScanner.getTokenScannerResult(text).tokens();
 
         tokenTableView.setItems(
                 FXCollections.observableList(
