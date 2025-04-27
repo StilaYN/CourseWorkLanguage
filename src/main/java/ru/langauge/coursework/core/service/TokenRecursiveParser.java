@@ -243,8 +243,8 @@ public class TokenRecursiveParser {
 
     private List<List<Token>> splitTokensIntoLines(List<Token> tokens) {
         List<List<Token>> lines = new ArrayList<>();
-        List<Token> currentLine = new ArrayList<>();
-        lines.add(tokens);
+        List<Token> currentLine = new ArrayList<>(tokens);
+        lines.add(currentLine);
         return lines;
     }
 }

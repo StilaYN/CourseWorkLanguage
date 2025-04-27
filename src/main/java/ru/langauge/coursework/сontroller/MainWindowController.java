@@ -21,10 +21,12 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import ru.langauge.coursework.core.entity.ErrorEntity;
 import ru.langauge.coursework.core.entity.Token;
 import ru.langauge.coursework.core.entity.TokenScannerResult;
 import ru.langauge.coursework.core.mapper.ErrorMapper;
 import ru.langauge.coursework.core.mapper.TokenMapper;
+import ru.langauge.coursework.core.service.ConvertService;
 import ru.langauge.coursework.core.service.FileService;
 import ru.langauge.coursework.core.service.TokenRecursiveParser;
 import ru.langauge.coursework.core.service.TokenScanner;
@@ -38,6 +40,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -423,15 +426,30 @@ public class MainWindowController implements Initializable {
                 tokenScannerResult.errors(),
                 resourceBundle
         );
+        List<ErrorEntity> errors = tokenRecursiveParser.parse();
 
         errorTableView.setItems(
                 FXCollections.observableList(
                         errorMapper.map(
-                                tokenRecursiveParser.parse(),
+                                errors,
                                 fileService
                         )
                 )
         );
+
+        if(errors.isEmpty()) {
+            ConvertService convertService = new ConvertService();
+            errorTableView.setItems(
+                    FXCollections.observableList(
+                            errorMapper.map(
+                                    convertService.getResult(tokenScannerResult.tokens(), text),
+                                    fileService
+                            )
+                    )
+            );
+        }
+
+
     }
 
     private void updateUI() {
