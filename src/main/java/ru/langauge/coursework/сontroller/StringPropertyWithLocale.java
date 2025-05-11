@@ -52,6 +52,10 @@ public enum StringPropertyWithLocale {
 
     TAB_TOKEN(new SimpleStringProperty(), "tab.token"),
     TAB_ERROR(new SimpleStringProperty(), "tab.error"),
+
+    PUNCTUATION_MARK(new SimpleStringProperty(), "menu.run.mark"),
+    TIN(new SimpleStringProperty(), "menu.run.tin"),
+    ELEMENT(new SimpleStringProperty(), "menu.run.element"),
     ;
     private final StringProperty property;
 

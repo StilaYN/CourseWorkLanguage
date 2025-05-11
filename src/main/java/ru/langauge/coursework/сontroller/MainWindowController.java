@@ -33,6 +33,7 @@ import ru.langauge.coursework.core.entity.TokenScannerResult;
 import ru.langauge.coursework.core.mapper.ErrorMapper;
 import ru.langauge.coursework.core.mapper.TokenMapper;
 import ru.langauge.coursework.core.service.FileService;
+import ru.langauge.coursework.core.service.RegExSubStringFinder;
 import ru.langauge.coursework.core.service.TokenRecursiveParser;
 import ru.langauge.coursework.core.service.TokenScanner;
 import ru.langauge.coursework.view_logic.CommandManager;
@@ -111,6 +112,8 @@ public class MainWindowController implements Initializable {
     private final TokenMapper tokenMapper = new TokenMapper();
 
     private final ErrorMapper errorMapper = new ErrorMapper();
+
+    private final RegExSubStringFinder regExSubStringFinder = new RegExSubStringFinder();
 
     private FileService fileService;
 
@@ -274,7 +277,16 @@ public class MainWindowController implements Initializable {
         runMenu.setOnAction(e -> runAnalyze());
         MenuItem runMenuItem = new MenuItem();
         runMenuItem.textProperty().bind(StringPropertyWithLocale.RUN.getProperty());
-        runMenu.getItems().addAll(runMenuItem);
+        MenuItem punctionMenuItem = new MenuItem();
+        punctionMenuItem.textProperty().bind(StringPropertyWithLocale.PUNCTUATION_MARK.getProperty());
+        punctionMenuItem.setOnAction(e -> runExpressionMarkAnalyze());
+        MenuItem tinMenuItem = new MenuItem();
+        tinMenuItem.textProperty().bind(StringPropertyWithLocale.TIN.getProperty());
+        tinMenuItem.setOnAction(e -> runExpressionTINAnalyze());
+        MenuItem elementMenuItem = new MenuItem();
+        elementMenuItem.textProperty().bind(StringPropertyWithLocale.ELEMENT.getProperty());
+        elementMenuItem.setOnAction(e -> runExpressionElementAnalyze());
+        runMenu.getItems().addAll(runMenuItem, punctionMenuItem, tinMenuItem, elementMenuItem);
 
         Menu languageMenu = new Menu();
         languageMenu.textProperty().bind(StringPropertyWithLocale.LANGUAGE.getProperty());
@@ -586,5 +598,36 @@ public class MainWindowController implements Initializable {
         updateTokenTable(textArea.getText());
     }
 
+    private void runExpressionMarkAnalyze(){
+        errorTableView.setItems(
+                FXCollections.observableList(
+                        errorMapper.map(
+                                regExSubStringFinder.findPunctuationMark(textArea.getText()),
+                                fileService
+                        )
+                )
+        );
+    }
 
+    private void runExpressionTINAnalyze(){
+        errorTableView.setItems(
+                FXCollections.observableList(
+                        errorMapper.map(
+                                regExSubStringFinder.findTin(textArea.getText()),
+                                fileService
+                        )
+                )
+        );
+    }
+
+    private void runExpressionElementAnalyze(){
+        errorTableView.setItems(
+                FXCollections.observableList(
+                        errorMapper.map(
+                                regExSubStringFinder.findChemicalElement(textArea.getText()),
+                                fileService
+                        )
+                )
+        );
+    }
 }
