@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class RegExSubStringFinder {
 
-    private final String PUNCTUATION_MARK = "[!\"#$%&'()*,./:;?@\\[\\]_\\`{|}~]";
+    private final String PUNCTUATION_MARK = "[!\"(),./:;?\\[\\]_\\`{}]";
     private final String TIN = "(?<!\\d)(?<!\\w)\\d{12}(?!\\d)(?!\\w)";
     private final String CHEMICAL_ELEMENT = "\\b(A[cglmrstu]" +
             "|B[aehikr]?" +
@@ -54,7 +54,7 @@ public class RegExSubStringFinder {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(input);
         while (matcher.find()) {
-            errors.add(new ErrorEntity(matcher.group(), matcher.start(), matcher.end()));
+            errors.add(new ErrorEntity(matcher.group(), 1, matcher.start()));
         }
         return errors;
     }
