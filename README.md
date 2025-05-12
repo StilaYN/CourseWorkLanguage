@@ -79,7 +79,7 @@ final int a=-000123;
 ### Поиск всех химических элементов из таблицы менделеева
 <b>\b(A[cglmrstu]|B[aehikr]?|C[adeflmnorsu]?|D[bsy]|E[rsu]|F[elmr]?|G[ade]|H[eog]?|I[nr]?|Kr?|L[airuv]|M[cdgnot]|N[adehiop]?|O[gs]?|P[abdmortu]?|R[abefhnsu]|S[bcegimn]?|T[abcehilms]|U|V|W|Xe|Yb?|Z[nr])\b</b>
 
-## Тестовые примеры
+## Тестовые примеры ЛР6
 ![l6_test1.png](l6_test1.png)
 ![l6_test2.png](l6_test2.png)
 ![l6_test3.png](l6_test3.png)
