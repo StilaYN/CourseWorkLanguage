@@ -13,10 +13,17 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.*;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -26,7 +33,6 @@ import ru.langauge.coursework.core.entity.Token;
 import ru.langauge.coursework.core.entity.TokenScannerResult;
 import ru.langauge.coursework.core.mapper.ErrorMapper;
 import ru.langauge.coursework.core.mapper.TokenMapper;
-import ru.langauge.coursework.core.service.ConvertService;
 import ru.langauge.coursework.core.service.FileService;
 import ru.langauge.coursework.core.service.TokenRecursiveParser;
 import ru.langauge.coursework.core.service.TokenScanner;
@@ -37,7 +43,11 @@ import ru.langauge.coursework.view_logic.TokenInfo;
 
 import javax.lang.model.SourceVersion;
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -436,19 +446,6 @@ public class MainWindowController implements Initializable {
                         )
                 )
         );
-
-        if(errors.isEmpty()) {
-            ConvertService convertService = new ConvertService();
-            errorTableView.setItems(
-                    FXCollections.observableList(
-                            errorMapper.map(
-                                    convertService.getResult(tokenScannerResult.tokens(), text),
-                                    fileService
-                            )
-                    )
-            );
-        }
-
 
     }
 
