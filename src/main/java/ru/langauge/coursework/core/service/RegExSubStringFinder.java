@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class RegExSubStringFinder {
 
     private final String PUNCTUATION_MARK = "[!\"(),./:;?\\[\\]_\\`{}]";
-    private final String TIN = "(?<!\\d)(?<!\\w)\\d{12}(?!\\d)(?!\\w)";
+    private final String TIN = "\\d{12}";
     private final String CHEMICAL_ELEMENT = "\\b(A[cglmrstu]" +
             "|B[aehikr]?" +
             "|C[adeflmnorsu]?" +
