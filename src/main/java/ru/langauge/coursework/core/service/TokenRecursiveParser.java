@@ -42,70 +42,65 @@ public class TokenRecursiveParser {
 
         public List<ErrorEntity> parse() {
             int currentPosition = 0;
-            tokens.add(new Token(TokenType.WHITESPACE,0,0,0));
             List<ErrorEntity> errors = new ArrayList<>();
-            ParserTuple tuple = expression(currentPosition, errors);
-            return end(tuple.currentPosition(), tuple.errors());
+            ParserTuple tuple = lexpSeq(currentPosition, errors);
+            return tuple.errors();
         }
 
-        private ParserTuple expression(int currentPosition, List<ErrorEntity> errors) {
+        private ParserTuple lexpSeq(int currentPosition, List<ErrorEntity> errors) {
             if (isAtEnd(currentPosition)) {
                 return new ParserTuple(currentPosition, errors);
             }
-            ParserTuple tuple = t(currentPosition, errors);
-            return a(tuple.currentPosition(), tuple.errors());
+            if (
+                    match(currentPosition, TokenType.DIGIT, errors)
+                            || match(currentPosition, TokenType.VAR_NAME, errors)
+                            || match(currentPosition, TokenType.OPEN_BRACKET, errors)
+            ) {
+                ParserTuple parserTuple = lexp(currentPosition, errors);
+                return lexpSeq(parserTuple.currentPosition(), parserTuple.errors());
+            } else {
+                return new ParserTuple(currentPosition, errors);
+            }
         }
 
-        private ParserTuple t(int currentPosition, List<ErrorEntity> errors) {
+        private ParserTuple lexp(int currentPosition, List<ErrorEntity> errors) {
             if (isAtEnd(currentPosition)) {
                 return new ParserTuple(currentPosition, errors);
             }
-            ParserTuple tuple = o(currentPosition, errors);
-            return b(tuple.currentPosition(), tuple.errors());
+            if (
+                    match(currentPosition, TokenType.DIGIT, errors)
+                            || match(currentPosition, TokenType.VAR_NAME, errors)
+            ) {
+                return atom(currentPosition, errors);
+            } else {
+                return list(currentPosition, errors);
+            }
+
         }
 
-        private ParserTuple o(int currentPosition, List<ErrorEntity> errors) {
+        private ParserTuple atom(int currentPosition, List<ErrorEntity> errors) {
             if (isAtEnd(currentPosition)) {
                 return new ParserTuple(currentPosition, errors);
             }
-            if (match(currentPosition, TokenType.DIGIT, errors)) {
-                return new ParserTuple(currentPosition + 1, errors);
-            } else if (match(currentPosition, TokenType.OPEN_BRACKET, errors)) {
-                openBracketCount++;
-                ParserTuple tuple = expression(currentPosition + 1, errors);
-                openBracketCount--;
+            if (
+                    !match(currentPosition, TokenType.DIGIT, errors) && !match(currentPosition, TokenType.VAR_NAME, errors)
+            ) {
+                addError(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors);
+                return atom(currentPosition + 1, errors);
+            }
+            return new ParserTuple(currentPosition + 1, errors);
+        }
+
+        private ParserTuple list(int currentPosition, List<ErrorEntity> errors) {
+            if (isAtEnd(currentPosition)) {
+                return new ParserTuple(currentPosition, errors);
+            }
+            if(match(currentPosition, TokenType.OPEN_BRACKET, errors)) {
+                ParserTuple tuple = lexpSeq(currentPosition + 1, errors);
                 return closeBracket(tuple.currentPosition(), tuple.errors());
             } else {
-                if (openBracketCount == 0 && match(currentPosition, TokenType.CLOSE_BRACKET, errors))
-                {
-                    addError(currentPosition, TokenType.DIGIT, ErrorType.REPLACE, errors);
-                    return new ParserTuple(currentPosition + 1, errors);
-                } else
-                {
-                    addError(currentPosition, TokenType.DIGIT, ErrorType.PUSH, errors);
-                }
-            }
-            return new ParserTuple(currentPosition, errors);
-        }
-
-        private ParserTuple b(int currentPosition, List<ErrorEntity> errors) {
-            if (isAtEnd(currentPosition)) {
-                return new ParserTuple(currentPosition, errors);
-            }
-            if (match(currentPosition, TokenType.OPEN_BRACKET, errors) || match(currentPosition, TokenType.DIGIT, errors)) {
-                addError(currentPosition, TokenType.MULTIPLY_OPERATORS, ErrorType.PUSH, errors);
-                ParserTuple tuple = t(currentPosition, errors);
-                return b(tuple.currentPosition(), tuple.errors());
-            } else if (match(currentPosition, TokenType.MULTIPLY_OPERATORS, errors)) {
-                ParserTuple tuple = t(currentPosition + 1, errors);
-                return b(tuple.currentPosition(), tuple.errors());
-            } else if (openBracketCount == 0 && match(currentPosition, TokenType.CLOSE_BRACKET, errors)
-                    && (match(currentPosition + 1, TokenType.MULTIPLY_OPERATORS, errors)
-                    || match(currentPosition + 1, TokenType.CLOSE_BRACKET, errors))) {
-                addError(currentPosition, TokenType.MULTIPLY_OPERATORS, ErrorType.DELETE, errors);
-                return b(currentPosition + 1, errors);
-            } else {
-                return new ParserTuple(currentPosition, errors);
+                addError(currentPosition, TokenType.OPEN_BRACKET, ErrorType.DELETE, errors);
+                return list(currentPosition + 1, errors);
             }
         }
 
@@ -119,28 +114,6 @@ public class TokenRecursiveParser {
                 return new ParserTuple(currentPosition, errors);
             }
             return new ParserTuple(currentPosition + 1, errors);
-        }
-
-
-        private ParserTuple a(int currentPosition, List<ErrorEntity> errors) {
-            if (isAtEnd(currentPosition)) {
-                return new ParserTuple(currentPosition, errors);
-            }
-            if (match(currentPosition, TokenType.OPEN_BRACKET, errors) || match(currentPosition, TokenType.DIGIT, errors)) {
-                addError(currentPosition, TokenType.PLUS_OPERATORS, ErrorType.PUSH, errors);
-                ParserTuple tuple = t(currentPosition, errors);
-                return a(tuple.currentPosition(), tuple.errors());
-            } else if (match(currentPosition, TokenType.PLUS_OPERATORS, errors)) {
-                ParserTuple tuple = t(currentPosition + 1, errors);
-                return a(tuple.currentPosition(), tuple.errors());
-            } else if (openBracketCount == 0 && match(currentPosition, TokenType.CLOSE_BRACKET, errors)
-                    && (match(currentPosition + 1, TokenType.PLUS_OPERATORS, errors)
-                    || match(currentPosition + 1, TokenType.CLOSE_BRACKET, errors))) {
-                addError(currentPosition, TokenType.PLUS_OPERATORS, ErrorType.DELETE, errors);
-                return a(currentPosition + 1, errors);
-            } else {
-                return new ParserTuple(currentPosition, errors);
-            }
         }
 
         private List<ErrorEntity> end(int currentPosition, List<ErrorEntity> errors) {
