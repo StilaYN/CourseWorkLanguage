@@ -44,7 +44,9 @@ public class TokenRecursiveParser {
             int currentPosition = 0;
             List<ErrorEntity> errors = new ArrayList<>();
             ParserTuple tuple = lexpSeq(currentPosition, errors);
+
             return tuple.errors();
+
         }
 
         private ParserTuple lexpSeq(int currentPosition, List<ErrorEntity> errors) {
@@ -59,6 +61,9 @@ public class TokenRecursiveParser {
                 ParserTuple parserTuple = lexp(currentPosition, errors);
                 return lexpSeq(parserTuple.currentPosition(), parserTuple.errors());
             } else {
+                if(openBracketCount == 0) {
+                    return lexp(currentPosition, errors);
+                }
                 return new ParserTuple(currentPosition, errors);
             }
         }
@@ -82,12 +87,6 @@ public class TokenRecursiveParser {
             if (isAtEnd(currentPosition)) {
                 return new ParserTuple(currentPosition, errors);
             }
-            if (
-                    !match(currentPosition, TokenType.DIGIT, errors) && !match(currentPosition, TokenType.VAR_NAME, errors)
-            ) {
-                addError(currentPosition, TokenType.DIGIT, ErrorType.DELETE, errors);
-                return atom(currentPosition + 1, errors);
-            }
             return new ParserTuple(currentPosition + 1, errors);
         }
 
@@ -96,11 +95,13 @@ public class TokenRecursiveParser {
                 return new ParserTuple(currentPosition, errors);
             }
             if(match(currentPosition, TokenType.OPEN_BRACKET, errors)) {
+                openBracketCount++;
                 ParserTuple tuple = lexpSeq(currentPosition + 1, errors);
+                openBracketCount--;
                 return closeBracket(tuple.currentPosition(), tuple.errors());
             } else {
                 addError(currentPosition, TokenType.OPEN_BRACKET, ErrorType.DELETE, errors);
-                return list(currentPosition + 1, errors);
+                return new ParserTuple(currentPosition + 1, errors);
             }
         }
 
@@ -117,20 +118,9 @@ public class TokenRecursiveParser {
         }
 
         private List<ErrorEntity> end(int currentPosition, List<ErrorEntity> errors) {
-            if (isAtEnd(currentPosition)) {
-                //addError(currentPosition - 1, TokenType.END, ErrorType.PUSH, errors);
-                errors.add(
-                        new ErrorEntity(
-                                createErrorMessage(currentPosition, TokenType.WHITESPACE, ErrorType.PUSH),
-                                getToken(currentPosition - 1).lineNumber(),
-                                getToken(currentPosition - 1).endColumn()
-                        )
-                );
+            if (!isAtEnd(currentPosition)) {
+                addError(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE_END, errors);
                 return errors;
-            }
-            if (!match(currentPosition, TokenType.WHITESPACE, errors)) {
-                addError(currentPosition, TokenType.WHITESPACE, ErrorType.DELETE, errors);
-                end(currentPosition + 1, errors);
             }
             return errors;
         }
