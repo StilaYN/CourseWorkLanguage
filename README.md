@@ -24,7 +24,7 @@
 
 ## Диаграмма сканера
 <div align="center">
-  <img src="stack.png" alt="Пример">
+  <img src="scanner.png" alt="Пример">
   <br>
   <strong>Рис. 1:</strong> Диаграмма сканнера
 </div>
