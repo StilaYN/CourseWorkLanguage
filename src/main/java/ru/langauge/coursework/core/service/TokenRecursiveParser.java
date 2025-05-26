@@ -1,6 +1,7 @@
 package ru.langauge.coursework.core.service;
 
 import ru.langauge.coursework.core.entity.*;
+import ru.langauge.coursework.view_logic.StackRecord;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,6 +13,12 @@ public class TokenRecursiveParser {
     private ResourceBundle resourceBundle;
     private final List<Token> tokens;
     private final List<ErrorEntity> errorsEntity;
+
+    public List<StackRecord> getStackRecords() {
+        return stackRecords;
+    }
+
+    private List<StackRecord> stackRecords = new ArrayList<>();
     private int openBracketCount = 0;
 
     public TokenRecursiveParser(List<Token> tokens, List<ErrorEntity> errors, ResourceBundle resourceBundle) {
@@ -25,6 +32,7 @@ public class TokenRecursiveParser {
         for (List<Token> line : splitTokensIntoLines(tokens)) {
             OneLineTokenRecursiveParser onelineTokenRecursiveParser = new OneLineTokenRecursiveParser(line, resourceBundle);
             errors.addAll(onelineTokenRecursiveParser.parse());
+            stackRecords.addAll(onelineTokenRecursiveParser.getFunctionStack());
         }
         errors.addAll(errorsEntity);
         return errors.stream().sorted(Comparator.comparing(ErrorEntity::column)).toList();
@@ -34,6 +42,7 @@ public class TokenRecursiveParser {
 
         private final List<Token> tokens;
         private final ResourceBundle resourceBundle;
+        private final List<StackRecord> functionStack = new ArrayList<>();
 
         public OneLineTokenRecursiveParser(List<Token> tokens, ResourceBundle resourceBundle) {
             this.tokens = tokens;
@@ -50,6 +59,7 @@ public class TokenRecursiveParser {
         }
 
         private ParserTuple lexpSeq(int currentPosition, List<ErrorEntity> errors) {
+            functionStack.add(new StackRecord("lexpSeq"));
             if (isAtEnd(currentPosition)) {
                 return new ParserTuple(currentPosition, errors);
             }
@@ -69,6 +79,7 @@ public class TokenRecursiveParser {
         }
 
         private ParserTuple lexp(int currentPosition, List<ErrorEntity> errors) {
+            functionStack.add(new StackRecord("lexp"));
             if (isAtEnd(currentPosition)) {
                 return new ParserTuple(currentPosition, errors);
             }
@@ -84,6 +95,7 @@ public class TokenRecursiveParser {
         }
 
         private ParserTuple atom(int currentPosition, List<ErrorEntity> errors) {
+            functionStack.add(new StackRecord("atom"));
             if (isAtEnd(currentPosition)) {
                 return new ParserTuple(currentPosition, errors);
             }
@@ -91,6 +103,7 @@ public class TokenRecursiveParser {
         }
 
         private ParserTuple list(int currentPosition, List<ErrorEntity> errors) {
+            functionStack.add(new StackRecord("list"));
             if (isAtEnd(currentPosition)) {
                 return new ParserTuple(currentPosition, errors);
             }
@@ -106,6 +119,7 @@ public class TokenRecursiveParser {
         }
 
         private ParserTuple closeBracket(int currentPosition, List<ErrorEntity> errors) {
+            functionStack.add(new StackRecord("closeBracket"));
             if (isAtEnd(currentPosition)) {
                 addError(currentPosition - 1, TokenType.CLOSE_BRACKET, ErrorType.PUSH, errors);
                 return new ParserTuple(currentPosition, errors);
@@ -201,6 +215,10 @@ public class TokenRecursiveParser {
             List<ErrorEntity> errors = new ArrayList<>(errorEntities);
             addError(currentPosition, expectedTokenType, errorType, errors);
             return errors;
+        }
+
+        public List<StackRecord> getFunctionStack() {
+            return functionStack;
         }
     }
 

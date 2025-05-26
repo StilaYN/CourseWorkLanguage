@@ -38,6 +38,7 @@ import ru.langauge.coursework.core.service.TokenRecursiveParser;
 import ru.langauge.coursework.core.service.TokenScanner;
 import ru.langauge.coursework.view_logic.CommandManager;
 import ru.langauge.coursework.view_logic.ErrorModel;
+import ru.langauge.coursework.view_logic.StackRecord;
 import ru.langauge.coursework.view_logic.TextEditCommand;
 import ru.langauge.coursework.view_logic.TokenInfo;
 
@@ -93,10 +94,16 @@ public class MainWindowController implements Initializable {
     private TableView<TokenInfo> tokenTableView;
 
     @FXML
+    private TableView<StackRecord> stackTableView;
+
+    @FXML
     private Tab errorTab;
 
     @FXML
     private Tab tokenTab;
+
+    @FXML
+    private Tab stackTab;
 
     private Timeline scrollTimeline = new Timeline();
 
@@ -373,8 +380,14 @@ public class MainWindowController implements Initializable {
         endColumnColumn.setCellValueFactory(new PropertyValueFactory<>("endColumn"));
         tokenTableView.getColumns().addAll(tokenTypeColumn, valueColumn, lineNumberColumn, startColumnColumn, endColumnColumn);
 
+        TableColumn<StackRecord, String> methodNameColumn = new TableColumn<>();
+        methodNameColumn.textProperty().bind(StringPropertyWithLocale.METHOD_NAME.getProperty());
+        methodNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        stackTableView.getColumns().add(methodNameColumn);
+
         tokenTab.textProperty().bind(StringPropertyWithLocale.TAB_TOKEN.getProperty());
         errorTab.textProperty().bind(StringPropertyWithLocale.TAB_ERROR.getProperty());
+        stackTab.textProperty().bind(StringPropertyWithLocale.TAB_STACK.getProperty());
     }
 
     private void setupKeyboardHotkeys() {
@@ -445,6 +458,10 @@ public class MainWindowController implements Initializable {
                                 fileService
                         )
                 )
+        );
+
+        stackTableView.setItems(
+                FXCollections.observableList(tokenRecursiveParser.getStackRecords())
         );
 
     }

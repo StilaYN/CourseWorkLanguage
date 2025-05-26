@@ -7,7 +7,7 @@ public enum TokenType {
     DIGIT("\\d+", "token.name.digit"),
     OPEN_BRACKET("\\(", "token.name.open_bracket"),
     CLOSE_BRACKET("\\)", "token.name.close_bracket"),
-    NOT_VALID("[^a-zA-Z0-9_\\s\\n]*", "token.name.not_valid"),
+    NOT_VALID("[^a-zA-Z0-9_\\s\\n\\(\\)]*", "token.name.not_valid"),
     ;
     private final String regex;
 

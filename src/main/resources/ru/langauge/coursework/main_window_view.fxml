@@ -172,6 +172,11 @@
                             <TableView fx:id="errorTableView" />
                         </content>
                     </Tab>
+                    <Tab fx:id="stackTab">
+                        <content>
+                            <TableView fx:id="stackTableView" />
+                        </content>
+                    </Tab>
                     <Tab fx:id="tokenTab">
                         <content>
                             <TableView fx:id="tokenTableView" />

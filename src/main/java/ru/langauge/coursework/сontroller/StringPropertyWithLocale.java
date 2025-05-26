@@ -50,8 +50,11 @@ public enum StringPropertyWithLocale {
     START_COLUMN(new SimpleStringProperty(), "table.head.startColumn"),
     END_COLUMN(new SimpleStringProperty(), "table.head.endColumn"),
 
+    METHOD_NAME(new SimpleStringProperty(), "table.head.methodName"),
+
     TAB_TOKEN(new SimpleStringProperty(), "tab.token"),
     TAB_ERROR(new SimpleStringProperty(), "tab.error"),
+    TAB_STACK(new SimpleStringProperty(), "tab.stack"),
     ;
     private final StringProperty property;
 
