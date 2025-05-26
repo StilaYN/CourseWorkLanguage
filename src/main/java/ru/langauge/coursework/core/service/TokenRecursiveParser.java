@@ -72,7 +72,8 @@ public class TokenRecursiveParser {
                 return lexpSeq(parserTuple.currentPosition(), parserTuple.errors());
             } else {
                 if(openBracketCount == 0) {
-                    return lexp(currentPosition, errors);
+                    ParserTuple tuple =  lexp(currentPosition, errors);
+                    return lexpSeq(tuple.currentPosition(), errors);
                 }
                 return new ParserTuple(currentPosition, errors);
             }
