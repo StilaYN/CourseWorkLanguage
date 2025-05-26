@@ -40,7 +40,7 @@
 <div align="center">
   <img src="test1_lex.png" alt="Пример">
   <br>
-  <strong>Рис. 3:</strong>Пример 1 Лексический анализ
+  <strong>Рис. 3:</strong>Пример 1 Лексимный анализ
 </div>
 
 <div align="center">
@@ -58,7 +58,7 @@
 <div align="center">
   <img src="test2_lex.png" alt="Пример">
   <br>
-  <strong>Рис. 6:</strong>Пример 2 Лексический анализ
+  <strong>Рис. 6:</strong>Пример 2 Лексемный анализ
 </div>
 
 <div align="center">
